@@ -5,22 +5,44 @@ on:
     branches: [main]
   pull_request:
 
+# Least privilege, declared here so it survives a change to the repository
+# default. A fork PR runs contributor-authored code in this job.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   website:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-
-      - name: Validate run records against schema
-        run: node scripts/validate-data.mjs
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
+      # A PR controls package.json and the lockfile, so no install script from
+      # this tree is allowed to execute. Nothing here needs one.
       - name: Install
-        run: npm ci
+        run: npm ci --ignore-scripts
+
+      - name: Validate run records against schema/
+        run: npm run validate
+
+      - name: Validator tests
+        run: npm test
+
+      # data/benchmarks.json is a generated projection. If a PR hand-edits it,
+      # regenerating produces a diff and this step fails.
+      - name: Index matches its generator
+        run: |
+          npm run generate:data
+          git diff --exit-code -- data/benchmarks.json
 
       - name: Typecheck
         run: npm run typecheck
