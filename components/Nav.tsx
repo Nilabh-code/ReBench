@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { allRecords, REPO_URL } from "../lib/data";
+import { REPO_URL } from "../lib/data";
 
 const LINKS = [
   { href: "/benchmarks", label: "BENCHMARKS", idx: "01" },
@@ -39,10 +39,9 @@ function Wordmark() {
   );
 }
 
-export default function Nav() {
+export default function Nav({ runs }: { runs: number }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const runs = allRecords().length;
 
   useEffect(() => {
     document.documentElement.style.overflow = open ? "hidden" : "";

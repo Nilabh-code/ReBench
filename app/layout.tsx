@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, IBM_Plex_Mono } from "next/font/google";
 import Nav from "../components/Nav";
+import { allRecords } from "../lib/data";
 import Footer from "../components/Footer";
 import Reveal from "../components/Reveal";
 import "./globals.css";
@@ -20,7 +21,7 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://github.com/Nilabh-code/ReBench"),
+  metadataBase: new URL("https://rebench.netlify.app"),
   title: {
     default: "ReBench — Open, reproducible AI benchmarks",
     template: "%s — ReBench",
@@ -42,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="flex min-h-screen flex-col antialiased">
         <script dangerouslySetInnerHTML={{ __html: `document.documentElement.classList.add('js')` }} />
         <Reveal />
-        <Nav />
+        <Nav runs={allRecords().length} />
         <main className="flex-1">{children}</main>
         <Footer />
       </body>

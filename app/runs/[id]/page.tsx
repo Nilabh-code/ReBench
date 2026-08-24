@@ -150,7 +150,7 @@ export default async function RunPage({ params }: { params: Promise<{ id: string
 
             {/* C — provenance */}
             <div className="px-6 py-6 md:px-8">
-              <span className="mono text-[0.5625rem] tracking-[0.26em] text-stone">C — PROVENANCE · 6 FIELDS</span>
+              <span className="mono text-[0.5625rem] tracking-[0.26em] text-stone">C — PROVENANCE · 7 FIELDS</span>
               <div className="mt-3">
                 <KV k="Engine" v={r.engine} />
                 <KV k="Engine ver" v={r.engineVersion} />
@@ -165,8 +165,8 @@ export default async function RunPage({ params }: { params: Promise<{ id: string
                 <span className="mono text-[0.5625rem] tracking-[0.24em] text-stone">VALIDATION</span>
                 <ul className="mono mt-2 space-y-1 text-[0.625rem] tracking-[0.08em] text-graphite">
                   <li>{"schema/benchmark.schema.json"} <span className="text-accent">✓</span></li>
-                  <li>OUTLIER CHECK vs {r.hardware} <span className="text-accent">✓</span></li>
-                  <li>PROVENANCE CHAIN <span className="text-accent">✓</span></li>
+                  <li className="text-stone">OUTLIER CHECK vs {r.hardware} — NOT IMPLEMENTED</li>
+                  <li className="text-stone">PROVENANCE CHAIN — NOT IMPLEMENTED</li>
                 </ul>
               </div>
             </div>

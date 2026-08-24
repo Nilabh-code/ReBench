@@ -45,6 +45,17 @@ function uniq(rows: BenchmarkRecord[], f: (r: BenchmarkRecord) => string): strin
   return [...new Set(rows.map(f))].sort();
 }
 
+/** Characters that make Excel/LibreOffice treat a cell as a formula, even inside quotes. */
+const CSV_FORMULA_TRIGGER = /^[=+\-@\t\r]/;
+
+function csvCell(v: unknown): string {
+  const s = String(v);
+  // Leading apostrophe forces the spreadsheet to read the cell as text, so a
+  // contributor-submitted "=HYPERLINK(...)" cannot execute in someone's Excel.
+  const safe = CSV_FORMULA_TRIGGER.test(s) ? `'${s}` : s;
+  return `"${safe.replaceAll('"', '""')}"`;
+}
+
 export default function BenchmarkTable({ rows, limit, csv }: Props) {
   const router = useRouter();
   const [q, setQ] = useState("");
@@ -98,7 +109,7 @@ export default function BenchmarkTable({ rows, limit, csv }: Props) {
     const head = ["id", "model", "quantization", "hardware", "engine", "engine_version", "prompt_tokens", "generated_tokens", "prompt_tps", "generation_tps", "ttft_ms", "score", "status"];
     const lines = filtered.map((r) =>
       [r.id, r.model, r.quantization, r.hardware, r.engine, r.engineVersion, r.promptTokens, r.generatedTokens, r.promptTPS, r.generationTPS, r.ttft, r.score, r.status]
-        .map((v) => `"${String(v).replaceAll('"', '""')}"`)
+        .map(csvCell)
         .join(",")
     );
     const blob = new Blob([head.join(",") + "\n" + lines.join("\n") + "\n"], { type: "text/csv" });

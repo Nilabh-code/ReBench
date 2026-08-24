@@ -1,12 +1,13 @@
 import CalibrationRig from "../CalibrationRig";
 import InstrumentPanel from "../InstrumentPanel";
-import { allRecords, REPO_URL } from "../../lib/data";
+import { allRecords, referenceRecord, REPO_URL } from "../../lib/data";
 import { asciiBar } from "../../lib/format";
 import { CornerMarks, FigLabel } from "../ui";
 import Link from "next/link";
 
 function TopRunsAscii() {
   const top = [...allRecords()].sort((a, b) => b.generationTPS - a.generationTPS).slice(0, 3);
+  if (!top.length) return null;
   const max = top[0].generationTPS;
   return (
     <div className="relative hidden max-w-[430px] border border-ink/30 bg-paper-dim/60 md:block" data-reveal style={{ "--reveal-delay": "400ms" } as React.CSSProperties}>
@@ -104,7 +105,7 @@ export default function Hero() {
 
             <div className="relative mt-1 px-1 pb-1">
               <div aria-hidden className="ruler-x mb-2 opacity-40" />
-              <InstrumentPanel />
+              <InstrumentPanel rec={referenceRecord()} />
             </div>
           </div>
 

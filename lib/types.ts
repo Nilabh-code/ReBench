@@ -41,6 +41,7 @@ export interface BenchmarkRecord {
 }
 
 export interface ModelAggregate {
+  /** the model itself, e.g. "Qwen3 27B" — aggregates are per model, not per family */
   model: string;
   family: string;
   runs: BenchmarkRecord[];

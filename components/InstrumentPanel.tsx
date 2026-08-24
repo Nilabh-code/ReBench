@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { referenceRecord } from "../lib/data";
 import { fmtNum } from "../lib/format";
+import type { BenchmarkRecord } from "../lib/types";
 
 type Phase = "BOOT" | "MEASURING" | "VALIDATING" | "VERIFIED";
 
 /** Animated run readout for the hero instrument panel. */
-export default function InstrumentPanel() {
-  const rec = referenceRecord();
+export default function InstrumentPanel({ rec }: { rec: BenchmarkRecord }) {
   const [gen, setGen] = useState(0);
   const [prompt, setPrompt] = useState(0);
   const [phase, setPhase] = useState<Phase>("BOOT");

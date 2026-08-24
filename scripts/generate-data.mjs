@@ -15,6 +15,8 @@ import { writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { runId } from "./run-id.mjs";
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 // ---------------------------------------------------------------- seeded rng
@@ -96,7 +98,7 @@ const WORKLOADS = [
 ];
 
 // ----------------------------------------------------------------- generate
-function makeRun(seq, dateISO) {
+function makeRun(dateISO) {
   const model = pick(MODELS);
   const engineName = pick(ENGINE_NAMES);
   const engine = ENGINES[engineName];
@@ -127,7 +129,6 @@ function makeRun(seq, dateISO) {
     ttft,
     contributor: pick(CONTRIBUTORS),
     dateISO,
-    seq,
     gitCommit: hex(40),
     status: "PENDING", // assigned later
   };
@@ -141,8 +142,8 @@ function scoreOf(r, refGen) {
   return Math.round((0.55 * g + 0.3 * p + 0.15 * t) * 1000) / 10;
 }
 
-// Spread runs over ~45 days ending 2026-08-24. Sequence starts at 000157 so
-// the most recent run is RUN-2026-08-24-000184 (the reference record).
+// Spread runs over ~45 days ending 2026-08-24. The most recent run is the
+// reference record shown in the hero panel.
 const COUNT = 28;
 const runs = [];
 for (let i = 0; i < COUNT; i++) {
@@ -153,7 +154,7 @@ for (let i = 0; i < COUNT; i++) {
   const min = rint(0, 59);
   const sec = rint(0, 59);
   const stamp = `${iso}T${String(hour).padStart(2, "0")}:${String(min).padStart(2, "0")}:${String(sec).padStart(2, "0")}Z`;
-  runs.push(makeRun(157 + i, stamp));
+  runs.push(makeRun(stamp));
 }
 
 // Pin the reference record: the hero run. Last seq, dated today, Qwen 27B
@@ -171,7 +172,9 @@ const ref = runs[COUNT - 1];
   ref.workload = { prompt: 4096, gen: 2048 };
   ref.genTPS = 72.8;
   ref.promptTPS = 1842.3;
-  ref.ttft = 412;
+  // 4096 prompt tokens at 1842.3 tok/s is 2223 ms of prefill; TTFT is that
+  // plus a small launch overhead. Anything lower contradicts promptTPS.
+  ref.ttft = 2280;
   ref.contributor = "nilabhz";
   ref.gitCommit = "a1f3c9e7d24b8f60c3e5a9b1d7f2c4a6e8b0d1f3";
 }
@@ -190,7 +193,6 @@ function refGen(model) {
 }
 
 const records = runs.map((r) => ({
-  id: `RUN-${r.dateISO.slice(0, 10)}-${String(r.seq).padStart(6, "0")}`,
   model: r.model.name,
   family: r.model.family,
   modelRevision: r.modelRevision,
@@ -213,14 +215,19 @@ const records = runs.map((r) => ({
   timestamp: r.dateISO,
   gitCommit: r.gitCommit,
   status: r.status,
-}));
+})).map((rec) => ({ id: runId(rec), ...rec }));
 
 records.sort((a, b) => a.id.localeCompare(b.id));
 
+const ids = new Set(records.map((r) => r.id));
+if (ids.size !== records.length) {
+  throw new Error(`id collision: ${records.length} records, ${ids.size} distinct ids`);
+}
+
 // ------------------------------------------------------------------- output
 const out = {
-  $schema: "./schema/benchmark.schema.json",
-  generated: "2026-08-24T00:00:00Z",
+  $schema: "./schema/index.schema.json",
+  generated: "2026-08-24T23:59:59Z",
   generator: "scripts/generate-data.mjs",
   demo: true,
   note: "DEMO DATA. Synthetic records for development. Replace with CI-generated index from results/.",
