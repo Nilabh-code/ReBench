@@ -1,41 +1,59 @@
 import raw from "../data/benchmarks.json";
 import contributorRoster from "../data/contributors.json";
+import { BENCHMARK_STATUS_VALUES, GPU_VENDOR_VALUES } from "./schema-types";
 import type {
+  BenchmarkIndex,
   BenchmarkRecord,
   ContributorAggregate,
   HardwareSlice,
   ModelAggregate,
+  RawBenchmarkRecord,
 } from "./types";
-
-export interface BenchmarkIndex {
-  demo: boolean;
-  generated: string;
-  benchmarkVersion: string;
-  records: BenchmarkRecord[];
-}
 
 export interface ActivityDay {
   date: string;
   count: number;
 }
 
-const index = raw as unknown as BenchmarkIndex;
+/**
+ * Narrows the two enum-valued fields that TypeScript widens to `string` when
+ * importing JSON. Everything else is checked by the assignments below, so a
+ * field missing from the index is a compile error and not an `undefined` in
+ * the UI.
+ */
+function toRecord(r: RawBenchmarkRecord): BenchmarkRecord {
+  const status = BENCHMARK_STATUS_VALUES.find((s) => s === r.status);
+  const gpuVendor = GPU_VENDOR_VALUES.find((v) => v === r.gpuVendor);
+  if (!status) throw new Error(`benchmarks.json: ${r.id} has unknown status "${r.status}"`);
+  if (!gpuVendor) throw new Error(`benchmarks.json: ${r.id} has unknown gpuVendor "${r.gpuVendor}"`);
+  return { ...r, status, gpuVendor };
+}
+
+// Typed assignments, not casts: BenchmarkIndex and RawBenchmarkRecord are
+// generated from the same schema ajv validates the file against, so this is
+// where a drift between data/benchmarks.json and the site's view of it shows up.
+const rawRecords: RawBenchmarkRecord[] = raw.records;
+const index: BenchmarkIndex = { ...raw, records: rawRecords.map(toRecord) };
 
 export function isDemoData(): boolean {
   return index.demo === true;
 }
 
 export function allRecords(): BenchmarkRecord[] {
-  // newest first for display
-  return [...index.records].sort((a, b) => b.id.localeCompare(a.id));
+  // newest first for display; id is the tiebreaker so the order is stable.
+  // Sorting on the id alone no longer works: its suffix is a content hash.
+  return [...index.records].sort(
+    (a, b) => b.timestamp.localeCompare(a.timestamp) || b.id.localeCompare(a.id)
+  );
 }
 
 export function recordById(id: string): BenchmarkRecord | undefined {
   return index.records.find((r) => r.id === id);
 }
 
+/** The run shown in the hero instrument panel: the most recent one. */
 export function referenceRecord(): BenchmarkRecord | undefined {
-  return recordById("RUN-2026-08-24-000184") ?? allRecords()[0];
+  return allRecords()[0];
 }
 
 export function runActivity(days = 84): ActivityDay[] {
@@ -63,23 +81,28 @@ export function uniqueValues<K extends keyof BenchmarkRecord>(key: K): string[] 
   return [...set].sort();
 }
 
+/**
+ * One aggregate per *model*, not per family: tokens/s is not comparable across
+ * parameter counts, so a family-wide max ranks every family by its smallest
+ * member.
+ */
 export function aggregateModels(): ModelAggregate[] {
   const map = new Map<string, BenchmarkRecord[]>();
   for (const r of index.records) {
-    const list = map.get(r.family) ?? [];
+    const list = map.get(r.model) ?? [];
     list.push(r);
-    map.set(r.family, list);
+    map.set(r.model, list);
   }
   const out: ModelAggregate[] = [];
-  for (const [family, runs] of map) {
-    const best = [...runs].sort((a, b) => b.generationTPS - a.generationTPS)[0];
+  for (const [model, runs] of map) {
+    const sorted = [...runs].sort((a, b) => b.generationTPS - a.generationTPS);
     out.push({
-      model: runs[0].model.replace(/ \d+[Bb]$/, ""), // family display name
-      family,
-      runs: runs.sort((a, b) => b.generationTPS - a.generationTPS),
-      bestGenerationTPS: best.generationTPS,
+      model,
+      family: runs[0].family,
+      runs: sorted,
+      bestGenerationTPS: sorted[0].generationTPS,
       bestPromptTPS: Math.max(...runs.map((r) => r.promptTPS)),
-      bestRun: best,
+      bestRun: sorted[0],
       quants: [...new Set(runs.map((r) => r.quantization))].sort(),
       engines: [...new Set(runs.map((r) => r.engine))].sort(),
       hardwareCount: new Set(runs.map((r) => r.hardware)).size,
