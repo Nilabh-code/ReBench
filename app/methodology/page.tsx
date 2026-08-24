@@ -158,14 +158,19 @@ $ docker run --rm --user "$(id -u):$(id -g)" \\
     rebench-runner:dev \\
     --base-url http://127.0.0.1:8000/v1 \\
     --model your-model \\
-    --suite test-writing \\
+    --suite performance \\
+    --manifest benchmark/performance.json \\
     --family your-family \\
     --contributor Nilabh-code \\
     --model-revision 0000000 \\
     --git-commit 0000000 \\
-    --output /output/run.json
-  ▸ request / measured metrics … ok
-  ▸ wrote out/run.json
+    --output /output/run.json \\
+    --status-file /output/status.json
+  ▸ fingerprinting … ok
+  ▸ warming_up … ok
+  ▸ measuring 3 repetitions … ok
+  ▸ wrote out/run.json + out/status.json
+  ▸ timingSource: provider or estimated_from_ttft
 $ cp out/run.json results/your-family/
 $ npm run validate && npm run generate:data
 $ git add results/ data/benchmarks.json

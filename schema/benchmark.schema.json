@@ -67,6 +67,24 @@
       "pattern": "^[a-z0-9-]+$",
       "description": "Versioned ReBench evaluation suite identifier."
     },
+    "timingSource": {
+      "enum": ["provider", "estimated_from_ttft"],
+      "description": "Whether prompt TPS used provider timing metadata or an estimate."
+    },
+    "trials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["generatedTokens", "ttft", "generationMs", "generationTPS"],
+        "properties": {
+          "generatedTokens": { "type": "integer", "minimum": 1 },
+          "ttft": { "type": "number", "minimum": 0 },
+          "generationMs": { "type": "number", "minimum": 0 },
+          "generationTPS": { "type": "number", "minimum": 0 }
+        }
+      }
+    },
     "promptTokens": { "type": "integer", "minimum": 1 },
     "generatedTokens": { "type": "integer", "minimum": 1 },
     "promptTPS": { "type": "number", "minimum": 0, "description": "Prompt evaluation throughput, tokens/s." },

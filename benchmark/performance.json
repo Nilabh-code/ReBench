@@ -1,0 +1,12 @@
+{
+  "id": "performance-v0.1.0",
+  "suite": "performance",
+  "version": "0.1.0",
+  "prompt": "Explain why reproducible benchmarks need pinned workloads in exactly three concise sentences.",
+  "temperature": 0,
+  "maxTokens": 128,
+  "warmups": 1,
+  "repetitions": 3,
+  "stream": true,
+  "notes": "The prompt and sampling parameters are pinned. Provider timing metadata is accepted when available; otherwise prompt TPS remains an estimate."
+}

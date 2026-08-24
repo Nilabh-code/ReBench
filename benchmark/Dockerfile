@@ -6,6 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN useradd --create-home --uid 10001 rebench
 WORKDIR /app
 COPY runner.py /app/runner.py
+COPY performance.json /app/performance.json
 RUN mkdir -p /output && chown -R rebench:rebench /app /output
 USER rebench
 VOLUME ["/output"]

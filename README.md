@@ -85,9 +85,18 @@ docker run --rm --user "$(id -u):$(id -g)" --network host \
   -e REBENCH_VRAM_GB=16 -e REBENCH_RAM_GB=32 -e REBENCH_CPU="your CPU" \
   --env REBENCH_API_KEY rebench-runner:dev \
   --base-url http://127.0.0.1:8000/v1 --model your-model \
-  --suite performance --family your-family --contributor Nilabh-code \
-  --model-revision 0000000 --git-commit 0000000 --output /output/run.json
+  --suite performance --manifest benchmark/performance.json \
+  --family your-family --contributor Nilabh-code \
+  --model-revision 0000000 --git-commit 0000000 \
+  --output /output/run.json --status-file /output/status.json
 ```
+
+The pinned manifest fixes prompt, sampling, warmups, repetitions, and streaming.
+The runner writes `run.json` plus a live `status.json` with phases
+`fingerprinting`, `warming_up`, `measuring`, `complete`, or `failed`.
+Each result includes raw per-trial TTFT/generation metrics. Prompt TPS uses
+provider timing metadata when the API returns `usage.prompt_ms`; otherwise the
+record explicitly says `timingSource: estimated_from_ttft`.
 
 Copy the output into `results/<family>/`, run `npm run validate` and
 `npm run generate:data`, then submit a pull request. CI validates the record;

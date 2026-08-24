@@ -58,6 +58,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--contributor", default=os.getenv("REBENCH_CONTRIBUTOR", "unknown"))
     p.add_argument("--model-revision", default=os.getenv("REBENCH_MODEL_REVISION", "0000000"))
     p.add_argument("--git-commit", default=os.getenv("REBENCH_GIT_COMMIT", "0000000"))
+    p.add_argument("--manifest", default=os.getenv("REBENCH_MANIFEST", "/app/performance.json"), help="Pinned JSON workload manifest")
     p.add_argument("--prompt", default=DEFAULT_PROMPT)
     p.add_argument("--max-tokens", type=int, default=128)
     p.add_argument("--warmups", type=int, default=1)
@@ -79,7 +80,7 @@ def headers(key: str) -> dict[str, str]:
     return result
 
 
-def stream_trial(url: str, body: dict, key: str) -> tuple[int, float, float]:
+def stream_trial(url: str, body: dict, key: str) -> tuple[int, float, float, dict]:
     request = urllib.request.Request(url, data=json.dumps(body).encode(), headers=headers(key), method="POST")
     started = time.perf_counter()
     first_token: float | None = None
@@ -110,7 +111,7 @@ def stream_trial(url: str, body: dict, key: str) -> tuple[int, float, float]:
     generated = int(usage.get("completion_tokens") or max(1, len("".join(pieces).split())))
     ttft_ms = (first_token - started) * 1000
     generation_ms = max((finished - first_token) * 1000, 0.001)
-    return generated, ttft_ms, generation_ms
+    return generated, ttft_ms, generation_ms, usage
 
 
 def write_status(path: str, phase: str, **extra: object) -> None:
@@ -122,6 +123,16 @@ def write_status(path: str, phase: str, **extra: object) -> None:
 
 def main() -> int:
     cfg = parse_args()
+    if cfg.manifest:
+        manifest = json.loads(Path(cfg.manifest).read_text())
+        if manifest.get("suite") != cfg.suite:
+            raise SystemExit("manifest suite does not match --suite")
+        cfg.prompt = manifest["prompt"]
+        cfg.max_tokens = int(manifest["maxTokens"])
+        cfg.warmups = int(manifest["warmups"])
+        cfg.repetitions = int(manifest["repetitions"])
+        if not manifest.get("stream", False):
+            raise SystemExit("ReBench performance manifest requires streaming")
     if cfg.repetitions < 1 or cfg.warmups < 0:
         raise SystemExit("--repetitions must be >= 1 and --warmups must be >= 0")
     hw = hardware()
@@ -133,7 +144,7 @@ def main() -> int:
         write_status(cfg.status_file, "warming_up", total=cfg.warmups + cfg.repetitions)
         for _ in range(cfg.warmups):
             stream_trial(url, body, cfg.api_key)
-        trials: list[tuple[int, float, float]] = []
+        trials: list[tuple[int, float, float, dict]] = []
         for index in range(cfg.repetitions):
             write_status(cfg.status_file, "measuring", repetition=index + 1, total=cfg.repetitions)
             trials.append(stream_trial(url, body, cfg.api_key))
@@ -145,9 +156,13 @@ def main() -> int:
     generated_values = [trial[0] for trial in trials]
     ttft_values = [trial[1] for trial in trials]
     generation_values = [trial[0] / (trial[2] / 1000) for trial in trials]
-    prompt_tps = prompt_tokens / max(sum(ttft_values) / len(ttft_values) / 1000, 0.001)
+    provider_prompt_ms = [float(trial[3]["prompt_ms"]) for trial in trials if trial[3].get("prompt_ms") is not None]
+    prompt_seconds = (sum(provider_prompt_ms) / len(provider_prompt_ms) / 1000) if provider_prompt_ms else (sum(ttft_values) / len(ttft_values) / 1000)
+    prompt_tps = prompt_tokens / max(prompt_seconds, 0.001)
+    trial_records = [{"generatedTokens": trial[0], "ttft": round(trial[1], 3), "generationMs": round(trial[2], 3), "generationTPS": round(trial[0] / (trial[2] / 1000), 3)} for trial in trials]
+    prompt_timing_source = "provider" if provider_prompt_ms else "estimated_from_ttft"
     now = datetime.now(timezone.utc).replace(microsecond=0)
-    record = {"model": cfg.model, "family": cfg.family, "modelRevision": cfg.model_revision, "quantization": cfg.quantization, **hw, "engine": os.getenv("REBENCH_ENGINE", "OpenAI-compatible API"), "engineVersion": os.getenv("REBENCH_ENGINE_VERSION", "unknown"), "benchmarkVersion": BENCHMARK_VERSION, "suite": cfg.suite, "promptTokens": prompt_tokens, "generatedTokens": round(sum(generated_values) / len(generated_values)), "promptTPS": round(prompt_tps, 3), "generationTPS": round(sum(generation_values) / len(generation_values), 3), "ttft": round(sum(ttft_values) / len(ttft_values), 3), "score": 0, "contributor": cfg.contributor, "timestamp": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "gitCommit": cfg.git_commit, "status": "PENDING"}
+    record = {"model": cfg.model, "family": cfg.family, "modelRevision": cfg.model_revision, "quantization": cfg.quantization, **hw, "engine": os.getenv("REBENCH_ENGINE", "OpenAI-compatible API"), "engineVersion": os.getenv("REBENCH_ENGINE_VERSION", "unknown"), "benchmarkVersion": BENCHMARK_VERSION, "suite": cfg.suite, "promptTokens": prompt_tokens, "generatedTokens": round(sum(generated_values) / len(generated_values)), "promptTPS": round(prompt_tps, 3), "generationTPS": round(sum(generation_values) / len(generation_values), 3), "ttft": round(sum(ttft_values) / len(ttft_values), 3), "timingSource": prompt_timing_source, "trials": trial_records, "score": 0, "contributor": cfg.contributor, "timestamp": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "gitCommit": cfg.git_commit, "status": "PENDING"}
     fields = ["model", "family", "modelRevision", "quantization", "hardware", "engine", "engineVersion", "promptTokens", "generatedTokens", "contributor", "timestamp"]
     digest = hashlib.sha256("|".join(str(record[key]) for key in fields).encode()).hexdigest()[:6]
     record["id"] = f"RUN-{now:%Y-%m-%d}-{digest}"
