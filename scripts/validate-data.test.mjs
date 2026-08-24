@@ -52,11 +52,11 @@ const CASES = [
   // --- gaps the previous validator did not cover -----------------------
   ["unknown field on a record", (d) => { d.records[0].sponsoredBy = "ACME"; }, /additional/i],
   ["unknown field on the envelope", (d) => { d.trustMe = true; }, /additional/i],
-  ["empty model string", (d) => { d.records[0].model = ""; }, /shorter than 1/i],
-  ["overlong model string", (d) => { d.records[0].model = "x".repeat(200); }, /longer than 120/i],
+  ["empty model string", (d) => { d.records[0].model = ""; }, /fewer than 1/i],
+  ["overlong model string", (d) => { d.records[0].model = "x".repeat(200); }, /more than 120/i],
   ["garbage timestamp", (d) => { d.records[0].timestamp = "yesterday-ish"; }, /pattern/i],
   ["non-UTC timestamp", (d) => { d.records[0].timestamp = "2026-08-24T12:00:00+02:00"; }, /pattern/i],
-  ["null record", (d) => { d.records[0] = null; }, /should be object/i],
+  ["null record", (d) => { d.records[0] = null; }, /must be object/i],
   ["envelope missing demo flag", (d) => { delete d.demo; }, /demo/],
   ["contributor that is not a github handle", (d) => { d.records[0].contributor = "not a handle!"; }, /pattern/i],
   ["hand-picked id", (d) => { d.records[0].id = "RUN-2026-08-24-aaaaaa"; }, /content hash/],
@@ -70,7 +70,7 @@ const CASES = [
   ["negative throughput", (d) => { d.records[0].generationTPS = -5; }, />= 0/],
   ["score out of range", (d) => { d.records[0].score = 4200; }, /<= 100/],
   ["non-integer token count", (d) => { d.records[0].promptTokens = 12.5; }, /integer/i],
-  ["number as string", (d) => { d.records[0].generationTPS = "72.8"; }, /should be number/i],
+  ["number as string", (d) => { d.records[0].generationTPS = "72.8"; }, /must be number/i],
 ];
 
 for (const [name, mutate, expected] of CASES) {
