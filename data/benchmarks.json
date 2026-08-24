@@ -1,13 +1,13 @@
 {
   "$schema": "./schema/benchmark.schema.json",
-  "generated": "2026-08-24T00:00:00Z",
+  "generated": "2026-08-24T23:59:59Z",
   "generator": "scripts/generate-data.mjs",
   "demo": true,
   "note": "DEMO DATA. Synthetic records for development. Replace with CI-generated index from results/.",
   "benchmarkVersion": "1.2.0",
   "records": [
     {
-      "id": "RUN-2026-07-11-000157",
+      "id": "RUN-2026-07-11-922c7e",
       "model": "Llama 3.1 70B",
       "family": "llama",
       "modelRevision": "e379bab58282abcc753a484993f9df0bf022f129",
@@ -32,7 +32,7 @@
       "status": "VERIFIED"
     },
     {
-      "id": "RUN-2026-07-13-000158",
+      "id": "RUN-2026-07-13-b41ed7",
       "model": "Mistral Small 24B",
       "family": "mistral",
       "modelRevision": "e41a539e352085bec46af84d07a80193ffdc5041",
@@ -57,7 +57,7 @@
       "status": "VERIFIED"
     },
     {
-      "id": "RUN-2026-07-15-000159",
+      "id": "RUN-2026-07-15-2be148",
       "model": "Qwen3 27B",
       "family": "qwen",
       "modelRevision": "19c7931ef1c8d05ac6b493f30e890d6a9ab3cd40",
@@ -82,7 +82,7 @@
       "status": "REPRODUCED"
     },
     {
-      "id": "RUN-2026-07-16-000160",
+      "id": "RUN-2026-07-16-33bbce",
       "model": "Qwen3 27B",
       "family": "qwen",
       "modelRevision": "552fba5b0da2e369f110d561e0e533759cb5edb9",
@@ -107,7 +107,7 @@
       "status": "VERIFIED"
     },
     {
-      "id": "RUN-2026-07-18-000161",
+      "id": "RUN-2026-07-18-069fb9",
       "model": "DeepSeek R1 Distill 32B",
       "family": "deepseek",
       "modelRevision": "d70afdcb5c69dc4af70257cb54628e309febab62",
@@ -132,7 +132,7 @@
       "status": "PENDING"
     },
     {
-      "id": "RUN-2026-07-20-000162",
+      "id": "RUN-2026-07-20-ec46ce",
       "model": "Llama 3.1 70B",
       "family": "llama",
       "modelRevision": "422f85c29f106e63e171f8528ddb8cdf15975ef4",
@@ -157,7 +157,7 @@
       "status": "VERIFIED"
     },
     {
-      "id": "RUN-2026-07-21-000163",
+      "id": "RUN-2026-07-21-bc9ba2",
       "model": "Gemma 3 12B",
       "family": "gemma",
       "modelRevision": "fe1758bbee8e33e2bd169f80e0cd44af67be593c",
@@ -182,7 +182,7 @@
       "status": "VERIFIED"
     },
     {
-      "id": "RUN-2026-07-23-000164",
+      "id": "RUN-2026-07-23-de0b81",
       "model": "Qwen3 27B",
       "family": "qwen",
       "modelRevision": "1e13d6ee56af8b30ce0f883bb956f8e7a7c536fc",
@@ -207,7 +207,7 @@
       "status": "REPRODUCED"
     },
     {
-      "id": "RUN-2026-07-25-000165",
+      "id": "RUN-2026-07-25-bf020a",
       "model": "Phi 4 14B",
       "family": "phi",
       "modelRevision": "4d40086312982aeec51127461e62d056c6f63e76",
@@ -232,7 +232,7 @@
       "status": "VERIFIED"
     },
     {
-      "id": "RUN-2026-07-26-000166",
+      "id": "RUN-2026-07-26-257de9",
       "model": "DeepSeek R1 Distill 32B",
       "family": "deepseek",
       "modelRevision": "60ca8f884642bf68777f56f5ca54886127235849",
@@ -257,7 +257,7 @@
       "status": "VERIFIED"
     },
     {
-      "id": "RUN-2026-07-28-000167",
+      "id": "RUN-2026-07-28-0bbc18",
       "model": "DeepSeek R1 Distill 32B",
       "family": "deepseek",
       "modelRevision": "5ac337726b6335c947e7a8cdec165ed5f8d4a0b4",
@@ -282,7 +282,7 @@
       "status": "PENDING"
     },
     {
-      "id": "RUN-2026-07-29-000168",
+      "id": "RUN-2026-07-29-07da33",
       "model": "Llama 3.1 8B",
       "family": "llama",
       "modelRevision": "dc8d224b6bd14faa55309e6cb572f81e3204f27a",
@@ -307,7 +307,7 @@
       "status": "VERIFIED"
     },
     {
-      "id": "RUN-2026-07-31-000169",
+      "id": "RUN-2026-07-31-266762",
       "model": "Llama 3.1 70B",
       "family": "llama",
       "modelRevision": "3725c1ecff40bc30663d04523a534c0fe39384ea",
@@ -332,7 +332,7 @@
       "status": "REPRODUCED"
     },
     {
-      "id": "RUN-2026-08-02-000170",
+      "id": "RUN-2026-08-02-8e4ad2",
       "model": "Phi 4 14B",
       "family": "phi",
       "modelRevision": "30b7aa247d561d77d663f8e81ab85c407be1f946",
@@ -357,7 +357,7 @@
       "status": "PENDING"
     },
     {
-      "id": "RUN-2026-08-03-000171",
+      "id": "RUN-2026-08-03-e1b3ee",
       "model": "Qwen3 8B",
       "family": "qwen",
       "modelRevision": "9983d396536e9de035c6a3b38f8c9e05eada948f",
@@ -382,7 +382,7 @@
       "status": "VERIFIED"
     },
     {
-      "id": "RUN-2026-08-05-000172",
+      "id": "RUN-2026-08-05-ad375b",
       "model": "Qwen3 27B",
       "family": "qwen",
       "modelRevision": "7d6c320e7d31b1246b335b4004af2865d98ab01a",
@@ -407,7 +407,7 @@
       "status": "PENDING"
     },
     {
-      "id": "RUN-2026-08-07-000173",
+      "id": "RUN-2026-08-07-3055ed",
       "model": "Gemma 3 12B",
       "family": "gemma",
       "modelRevision": "304efa045dce53feb2b402016e1924531a3cd3db",
@@ -432,7 +432,7 @@
       "status": "VERIFIED"
     },
     {
-      "id": "RUN-2026-08-08-000174",
+      "id": "RUN-2026-08-08-6e403a",
       "model": "Qwen3 8B",
       "family": "qwen",
       "modelRevision": "875cb59a1d6aad9318ac8f0d9431dba2e3d70cfb",
@@ -457,7 +457,7 @@
       "status": "VERIFIED"
     },
     {
-      "id": "RUN-2026-08-10-000175",
+      "id": "RUN-2026-08-10-f5b1a0",
       "model": "Llama 3.1 8B",
       "family": "llama",
       "modelRevision": "dcf081b32a9bc2100254d9c441391f8e96417060",
@@ -482,7 +482,7 @@
       "status": "VERIFIED"
     },
     {
-      "id": "RUN-2026-08-11-000176",
+      "id": "RUN-2026-08-11-6a97d4",
       "model": "Llama 3.1 70B",
       "family": "llama",
       "modelRevision": "fe655d5a749d6bed67068b1c6b135942fe361056",
@@ -507,7 +507,7 @@
       "status": "REPRODUCED"
     },
     {
-      "id": "RUN-2026-08-13-000177",
+      "id": "RUN-2026-08-13-27d1ff",
       "model": "Gemma 3 12B",
       "family": "gemma",
       "modelRevision": "af218e405dd8e2b8648479a93e8cee6db6f27bbc",
@@ -532,7 +532,7 @@
       "status": "REPRODUCED"
     },
     {
-      "id": "RUN-2026-08-15-000178",
+      "id": "RUN-2026-08-15-7618ea",
       "model": "Qwen3 27B",
       "family": "qwen",
       "modelRevision": "b71ee3640602ca694a3f0eb5918b28c02d3f2c4e",
@@ -557,7 +557,7 @@
       "status": "VERIFIED"
     },
     {
-      "id": "RUN-2026-08-16-000179",
+      "id": "RUN-2026-08-16-ea9b0c",
       "model": "DeepSeek R1 Distill 32B",
       "family": "deepseek",
       "modelRevision": "c7d3e6db49db9bd79fda2aa34fda3d975d4d2217",
@@ -582,7 +582,7 @@
       "status": "VERIFIED"
     },
     {
-      "id": "RUN-2026-08-18-000180",
+      "id": "RUN-2026-08-18-cdc828",
       "model": "Llama 3.1 70B",
       "family": "llama",
       "modelRevision": "a6ea4b8bc253c3f5b1c74ff6c421e1ba2d54b215",
@@ -607,7 +607,7 @@
       "status": "PENDING"
     },
     {
-      "id": "RUN-2026-08-20-000181",
+      "id": "RUN-2026-08-20-fe5029",
       "model": "Llama 3.1 8B",
       "family": "llama",
       "modelRevision": "a89bc3dd4af7eace798ef865359a4daf69aa3e29",
@@ -632,7 +632,7 @@
       "status": "VERIFIED"
     },
     {
-      "id": "RUN-2026-08-21-000182",
+      "id": "RUN-2026-08-21-f2a9bb",
       "model": "Mistral Small 24B",
       "family": "mistral",
       "modelRevision": "8459d473663c1041b19c3349111a1982de0a5eef",
@@ -657,7 +657,7 @@
       "status": "VERIFIED"
     },
     {
-      "id": "RUN-2026-08-23-000183",
+      "id": "RUN-2026-08-23-3a1635",
       "model": "DeepSeek R1 Distill 32B",
       "family": "deepseek",
       "modelRevision": "0a8f11d7d9d4407783f5ad6258267b4a8d3df543",
@@ -682,7 +682,7 @@
       "status": "REPRODUCED"
     },
     {
-      "id": "RUN-2026-08-24-000184",
+      "id": "RUN-2026-08-24-edcacb",
       "model": "Qwen3 27B",
       "family": "qwen",
       "modelRevision": "7aed1635d0107ec7247739e415e3a81c20862fd7",
@@ -699,8 +699,8 @@
       "generatedTokens": 2048,
       "promptTPS": 1842.3,
       "generationTPS": 72.8,
-      "ttft": 412,
-      "score": 97.5,
+      "ttft": 2280,
+      "score": 86.3,
       "contributor": "nilabhz",
       "timestamp": "2026-08-24T23:21:27Z",
       "gitCommit": "a1f3c9e7d24b8f60c3e5a9b1d7f2c4a6e8b0d1f3",

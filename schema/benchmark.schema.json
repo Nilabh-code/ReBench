@@ -33,8 +33,8 @@
   "properties": {
     "id": {
       "type": "string",
-      "pattern": "^RUN-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{6}$",
-      "description": "Run identifier: RUN-YYYY-MM-DD-NNNNNN"
+      "pattern": "^RUN-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9a-f]{6}$",
+      "description": "Run identifier: RUN-YYYY-MM-DD-HHHHHH, where the suffix is a content hash of the run. Content-addressed so concurrent submissions cannot collide."
     },
     "model": { "type": "string", "minLength": 1 },
     "family": {
