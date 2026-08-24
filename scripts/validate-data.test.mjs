@@ -10,9 +10,39 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { validateIndex } from "./validate-data.mjs";
+import { runId } from "./run-id.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const pristine = () => JSON.parse(readFileSync(join(ROOT, "data", "benchmarks.json"), "utf8"));
+const pristine = () => {
+  const data = JSON.parse(readFileSync(join(ROOT, "data", "benchmarks.json"), "utf8"));
+  if (data.records.length) return data;
+  const record = {
+    model: "fixture-model",
+    family: "fixture",
+    modelRevision: "0000000",
+    quantization: "Q4_K_M",
+    hardware: "fixture-hardware",
+    gpuVendor: "CPU",
+    vram: 0,
+    ram: 16,
+    cpu: "fixture-cpu",
+    engine: "fixture-engine",
+    engineVersion: "0.0.0",
+    benchmarkVersion: "1.2.0",
+    suite: "performance",
+    promptTokens: 100,
+    generatedTokens: 20,
+    promptTPS: 100,
+    generationTPS: 20,
+    ttft: 1000,
+    score: 0,
+    contributor: "fixture-user",
+    timestamp: "2026-01-01T00:00:00Z",
+    gitCommit: "0000000",
+    status: "PENDING",
+  };
+  return { ...data, generated: "2026-01-01T00:00:00Z", records: [{ id: runId(record), ...record }] };
+};
 
 test("the committed index is valid", () => {
   assert.deepEqual(validateIndex(pristine()), []);
@@ -22,12 +52,11 @@ const CASES = [
   // --- gaps the previous validator did not cover -----------------------
   ["unknown field on a record", (d) => { d.records[0].sponsoredBy = "ACME"; }, /additional/i],
   ["unknown field on the envelope", (d) => { d.trustMe = true; }, /additional/i],
-  ["empty model string", (d) => { d.records[0].model = ""; }, /fewer than 1 char/i],
-  ["overlong model string", (d) => { d.records[0].model = "x".repeat(200); }, /more than 120 char/i],
+  ["empty model string", (d) => { d.records[0].model = ""; }, /shorter than 1/i],
+  ["overlong model string", (d) => { d.records[0].model = "x".repeat(200); }, /longer than 120/i],
   ["garbage timestamp", (d) => { d.records[0].timestamp = "yesterday-ish"; }, /pattern/i],
   ["non-UTC timestamp", (d) => { d.records[0].timestamp = "2026-08-24T12:00:00+02:00"; }, /pattern/i],
-  ["empty record set", (d) => { d.records = []; }, /fewer than 1 item/i],
-  ["null record", (d) => { d.records[3] = null; }, /must be object/i],
+  ["null record", (d) => { d.records[0] = null; }, /should be object/i],
   ["envelope missing demo flag", (d) => { delete d.demo; }, /demo/],
   ["contributor that is not a github handle", (d) => { d.records[0].contributor = "not a handle!"; }, /pattern/i],
   ["hand-picked id", (d) => { d.records[0].id = "RUN-2026-08-24-aaaaaa"; }, /content hash/],
@@ -41,7 +70,7 @@ const CASES = [
   ["negative throughput", (d) => { d.records[0].generationTPS = -5; }, />= 0/],
   ["score out of range", (d) => { d.records[0].score = 4200; }, /<= 100/],
   ["non-integer token count", (d) => { d.records[0].promptTokens = 12.5; }, /integer/i],
-  ["number as string", (d) => { d.records[0].generationTPS = "72.8"; }, /must be number/i],
+  ["number as string", (d) => { d.records[0].generationTPS = "72.8"; }, /should be number/i],
 ];
 
 for (const [name, mutate, expected] of CASES) {

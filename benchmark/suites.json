@@ -1,0 +1,34 @@
+{
+  "version": "0.1.0",
+  "license": "ReBench original evaluation specifications; task fixtures will be published separately.",
+  "suites": [
+    {
+      "id": "test-writing",
+      "title": "Test Writing",
+      "description": "Add meaningful tests to an existing codebase while preserving the public contract.",
+      "evaluation": "Hidden regression tests, mutation score, and patch validity.",
+      "leaderboardMetric": "task pass rate"
+    },
+    {
+      "id": "refactoring",
+      "title": "Refactoring",
+      "description": "Improve structure, readability, or performance without changing observable behavior.",
+      "evaluation": "Regression suite, static checks, behavior equivalence, and patch quality.",
+      "leaderboardMetric": "task pass rate"
+    },
+    {
+      "id": "codebase-qna",
+      "title": "Codebase Q&A",
+      "description": "Answer questions about a real repository with file-and-line grounded evidence.",
+      "evaluation": "Reference answer agreement plus citation and repository-grounding checks.",
+      "leaderboardMetric": "grounded answer score"
+    },
+    {
+      "id": "bug-fixing",
+      "title": "Bug Fixing",
+      "description": "Diagnose and fix an issue in a repository without breaking unrelated behavior.",
+      "evaluation": "Hidden reproducer, regression tests, and changed-surface checks.",
+      "leaderboardMetric": "task pass rate"
+    }
+  ]
+}

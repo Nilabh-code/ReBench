@@ -15,7 +15,7 @@ export default function LiveTable() {
 
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
           <p className="mono text-[0.625rem] tracking-[0.18em] text-stone">
-            SHOWING TOP 10 OF {allRecords().length} · SYNTHETIC DEMO INDEX
+            SHOWING TOP 10 OF {allRecords().length} · MEASURED INDEX · UPDATES AFTER CI DEPLOY
           </p>
           <Link href="/benchmarks" className="link-u">
             OPEN FULL INDEX →

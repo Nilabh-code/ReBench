@@ -1,50 +1,19 @@
 import Link from "next/link";
 import CountTo from "../../components/CountTo";
-import { DemoTag, PageHead, SectionHead } from "../../components/ui";
+import { PageHead, SectionHead } from "../../components/ui";
 import { aggregateContributors, aggregateModels, allRecords, hardwareSlices } from "../../lib/data";
-import { contributionWeeks } from "../../lib/demo";
 import { fmtDate } from "../../lib/format";
 
 export const metadata = { title: "Contributors" };
 
-const LEVELS = ["bg-ink/10", "bg-ink/30", "bg-ink/55", "bg-ink/80", "bg-ink"];
 
-function cellClass(v: number): string {
-  if (v === 0) return "bg-ink/10";
-  if (v <= 2) return LEVELS[1];
-  if (v <= 5) return LEVELS[2];
-  if (v <= 8) return LEVELS[3];
-  return LEVELS[4];
-}
-
-function MonthLabels() {
-  const weeks = contributionWeeks();
-  const labels: { idx: number; m: string }[] = [];
-  let last = -1;
-  weeks.forEach((w, i) => {
-    const m = new Date(w.start).getUTCMonth();
-    if (m !== last) {
-      labels.push({ idx: i, m: w.start.slice(5, 7) });
-      last = m;
-    }
-  });
-  return (
-    <div className="mono relative mb-1 h-4 text-[0.5625rem] tracking-[0.1em] text-stone" aria-hidden>
-      {labels.map((l) => (
-        <span key={`${l.idx}-${l.m}`} className="absolute" style={{ left: `${l.idx * 13}px` }}>
-          {l.m}
-        </span>
-      ))}
-    </div>
-  );
-}
 
 export default function ContributorsPage() {
   const people = aggregateContributors();
   const runs = allRecords().length;
   const models = aggregateModels().length;
   const hardware = hardwareSlices().length;
-  const weeks = contributionWeeks();
+
 
   return (
     <>
@@ -75,28 +44,9 @@ export default function ContributorsPage() {
         {/* activity grid */}
         <div className="mt-14">
           <div className="flex items-center justify-between">
-            <SectionHead no="A" title="RUN ACTIVITY — 52 WEEKS" />
-            <DemoTag />
+            <SectionHead no="A" title="RUN ACTIVITY — MEASURED DATA" />
           </div>
-          <div className="mt-5 overflow-x-auto pb-2" data-reveal>
-            <MonthLabels />
-            <div className="flex gap-[3px]" role="img" aria-label="Grid of benchmark run activity over the last 52 weeks">
-              {weeks.map((w) => (
-                <div key={w.start} className="flex flex-col gap-[3px]">
-                  {w.days.map((d, di) => (
-                    <span
-                      key={di}
-                      title={`${w.start} + ${di}d: ${d} runs`}
-                      className={`h-[10px] w-[10px] ${cellClass(d)}`}
-                    />
-                  ))}
-                </div>
-              ))}
-            </div>
-            <div className="mono mt-2 flex items-center gap-2 text-[0.5625rem] tracking-[0.18em] text-stone">
-              LESS {LEVELS.map((l) => <span key={l} className={`h-[10px] w-[10px] ${l}`} />)} MORE
-            </div>
-          </div>
+          <p className="mono mt-5 border border-ink/20 bg-paper-dim/50 p-4 text-[0.625rem] tracking-[0.16em] text-stone">ACTIVITY GRAPH IS GENERATED FROM MEASURED RESULTS. NO RUNS ARE CURRENTLY INDEXED.</p>
         </div>
 
         {/* people table */}

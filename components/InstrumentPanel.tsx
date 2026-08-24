@@ -1,13 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { referenceRecord } from "../lib/data";
 import { fmtNum } from "../lib/format";
-import type { BenchmarkRecord } from "../lib/types";
 
 type Phase = "BOOT" | "MEASURING" | "VALIDATING" | "VERIFIED";
 
 /** Animated run readout for the hero instrument panel. */
-export default function InstrumentPanel({ rec }: { rec: BenchmarkRecord }) {
+export default function InstrumentPanel() {
+  const rec = referenceRecord();
+  if (!rec) return <div className="border border-night-edge bg-night-raise p-6 mono text-xs tracking-[0.16em] text-night-fog">NO MEASURED RUNS YET</div>;
+  return <InstrumentPanelRun rec={rec} />;
+}
+
+function InstrumentPanelRun({ rec }: { rec: NonNullable<ReturnType<typeof referenceRecord>> }) {
   const [gen, setGen] = useState(0);
   const [prompt, setPrompt] = useState(0);
   const [phase, setPhase] = useState<Phase>("BOOT");

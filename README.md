@@ -52,9 +52,10 @@ ReBench/                       # this Next.js application (app router, repo root
 
 ## Current state
 
-All records currently served are **demo data**: synthetic but plausible,
-generated with `npm run generate:data` (seeded, deterministic). Every page
-that displays records is labeled accordingly.
+The synthetic dataset has been removed. The website starts with an empty,
+honest index and is populated only from measured JSON records committed under
+`results/`. CI regenerates the index on every result change; no page invents
+benchmark numbers.
 
 ## Development
 
@@ -66,6 +67,34 @@ npm run lint
 npm run typecheck
 npm run generate:data  # regenerate data/benchmarks.json
 ```
+
+## Docker runner
+
+The website's **Methodology → Evaluation suites → Run a benchmark** section
+contains the same copyable flow. ReBench currently accepts an
+OpenAI-compatible `/v1/chat/completions` endpoint and writes one redacted JSON
+record; the browser cannot directly inspect a Docker process running on a
+contributor's machine.
+
+```sh
+mkdir -p out
+docker build -t rebench-runner:dev -f benchmark/Dockerfile benchmark
+docker run --rm --user "$(id -u):$(id -g)" --network host \
+  -v "$PWD/out:/output" \
+  -e REBENCH_HARDWARE="your GPU" -e REBENCH_GPU_VENDOR="NVIDIA" \
+  -e REBENCH_VRAM_GB=16 -e REBENCH_RAM_GB=32 -e REBENCH_CPU="your CPU" \
+  --env REBENCH_API_KEY rebench-runner:dev \
+  --base-url http://127.0.0.1:8000/v1 --model your-model \
+  --suite performance --family your-family --contributor Nilabh-code \
+  --model-revision 0000000 --git-commit 0000000 --output /output/run.json
+```
+
+Copy the output into `results/<family>/`, run `npm run validate` and
+`npm run generate:data`, then submit a pull request. CI validates the record;
+after merge, Netlify rebuilds the measured leaderboard. `test-writing`,
+`refactoring`, `codebase-qna`, and `bug-fixing` are versioned suite identifiers
+in `benchmark/suites.json`; their task fixtures and evaluators must be
+published before claiming scores.
 
 ## License
 

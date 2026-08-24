@@ -19,6 +19,7 @@
     "engine",
     "engineVersion",
     "benchmarkVersion",
+    "suite",
     "promptTokens",
     "generatedTokens",
     "promptTPS",
@@ -60,6 +61,11 @@
       "type": "string",
       "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
       "description": "Semantic version of the runner/workload that produced the run."
+    },
+    "suite": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Versioned ReBench evaluation suite identifier."
     },
     "promptTokens": { "type": "integer", "minimum": 1 },
     "generatedTokens": { "type": "integer", "minimum": 1 },

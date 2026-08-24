@@ -6,6 +6,7 @@ const MISSING = ["GPU", "QUANTIZATION", "ENGINE", "ENGINE VERSION", "PROMPT LENG
 
 export default function Reproducibility() {
   const r = referenceRecord();
+  if (!r) return <section className="border-b border-ink/25"><div className="mx-auto max-w-page px-6 py-20 mono text-sm tracking-[0.16em] text-stone">NO MEASURED RUNS YET — REPRODUCIBILITY DATA WILL APPEAR AFTER THE FIRST RUN.</div></section>;
 
   return (
     <section className="border-b border-ink/25 bg-paper-dim/50">

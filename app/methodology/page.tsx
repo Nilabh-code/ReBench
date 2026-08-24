@@ -116,6 +116,18 @@ export default function MethodologyPage() {
               ))}
             </ol>
 
+            {/* suite catalog */}
+            <section id="suites" className="scroll-mt-32 border-t border-ink/30 pt-10">
+              <div className="flex items-baseline justify-between gap-4">
+                <div><span className="mono text-[0.75rem] tracking-[0.2em] text-accent">§09</span><h2 className="font-disp mt-2 text-2xl font-extrabold">Evaluation suites</h2></div>
+                <span className="mono text-[0.625rem] tracking-[0.16em] text-stone">VERSION 0.1.0</span>
+              </div>
+              <p className="mt-4 max-w-[68ch] text-[0.9375rem] leading-relaxed text-graphite">ReBench will publish separate, versioned leaderboards for software-engineering tasks. These are original ReBench specifications inspired by the need for focused evaluations; they are not copied from private third-party datasets.</p>
+              <div className="mt-6 grid gap-px border border-ink/25 bg-ink/20 sm:grid-cols-2">
+                {[['TEST WRITING','Add meaningful tests; score hidden regression and mutation checks.'],['REFACTORING','Improve structure while preserving behavior; score regression and static checks.'],['CODEBASE Q&A','Answer repository questions with file/line evidence; score grounding.'],['BUG FIXING','Diagnose and patch a real issue; score hidden reproducer and regressions.']].map(([title, desc]) => <div key={title} className="bg-paper p-5"><span className="mono text-[0.625rem] tracking-[0.18em] text-accent">{title}</span><p className="mt-2 text-sm leading-relaxed text-graphite">{desc}</p><span className="mono mt-3 block text-[0.5625rem] tracking-[0.14em] text-stone">TASK PASS RATE · VERSIONED</span></div>)}
+              </div>
+            </section>
+
             {/* run a benchmark */}
             <section id="run" className="scroll-mt-32">
               <div className="mt-14 border border-ink bg-night text-night-paper hard-shadow">
@@ -131,13 +143,35 @@ export default function MethodologyPage() {
                   </p>
                   <pre className="mono mt-5 overflow-x-auto border border-night-edge bg-night-raise p-4 text-[0.75rem] leading-[1.9] text-night-paper">
 {`$ git clone https://github.com/Nilabh-code/ReBench
-$ cd ReBench/benchmark/runner
-$ rebench run --workload standard-4096
-  ▸ fingerprinting hardware … ok
-  ▸ locking workload checksum … ok
-  ▸ measuring (3 passes) … ok
-  ▸ wrote RUN-2026-08-24-000185.json
-$ rebench submit            # opens a pull request`}
+$ cd ReBench
+$ mkdir -p out
+$ docker build -t rebench-runner:dev -f benchmark/Dockerfile benchmark
+$ docker run --rm --user "$(id -u):$(id -g)" \\
+    --network host \\
+    -v "$PWD/out:/output" \\
+    -e REBENCH_HARDWARE="RTX 5060 Ti" \\
+    -e REBENCH_GPU_VENDOR="NVIDIA" \\
+    -e REBENCH_VRAM_GB=16 \\
+    -e REBENCH_RAM_GB=32 \\
+    -e REBENCH_CPU="your CPU" \\
+    --env REBENCH_API_KEY \\
+    rebench-runner:dev \\
+    --base-url http://127.0.0.1:8000/v1 \\
+    --model your-model \\
+    --suite test-writing \\
+    --family your-family \\
+    --contributor Nilabh-code \\
+    --model-revision 0000000 \\
+    --git-commit 0000000 \\
+    --output /output/run.json
+  ▸ request / measured metrics … ok
+  ▸ wrote out/run.json
+$ cp out/run.json results/your-family/
+$ npm run validate && npm run generate:data
+$ git add results/ data/benchmarks.json
+$ git commit -m "results: add measured benchmark run"
+$ git push -u origin HEAD
+$ gh pr create --fill`}
                   </pre>
                   <p className="mono mt-4 text-[0.625rem] leading-relaxed tracking-[0.14em] text-night-fog">
                     RUNNER v1.2.0 LANDS WITH THE FIRST REAL RESULTS. INTERFACE SHOWN IS THE FROZEN SPEC.

@@ -61,7 +61,7 @@ export default function Nav({ runs }: { runs: number }) {
           </span>
           <span className="hidden md:block">{runs} RUNS INDEXED · REV 2026-08-24</span>
           <span className="flex items-center gap-3">
-            <span className="text-accent">DEMO DATA</span>
+            <span className="text-accent">MEASURED DATA</span>
             <UtcClock />
           </span>
         </div>
@@ -142,7 +142,7 @@ export default function Nav({ runs }: { runs: number }) {
               </a>
             </div>
             <p className="mono mt-8 pb-2 text-[0.625rem] tracking-[0.16em] text-stone">
-              REBENCH v1.2.0 · DEMO DATA · MIT
+              REBENCH v1.2.0 · MEASURED DATA · MIT
             </p>
           </div>
         </div>

@@ -89,7 +89,7 @@ export function DemoTag({ light = false }: { light?: boolean }) {
         light ? "border-night-paper/50 text-night-paper/80" : "border-accent/60 text-accent"
       }`}
     >
-      DEMO DATA
+      REAL INDEX
     </span>
   );
 }

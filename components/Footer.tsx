@@ -68,7 +68,7 @@ export default function Footer() {
           <span>
             BUILD <span className="text-ink">{BUILD_HASH}</span> · RUNNER v1.2.0
           </span>
-          <span className="text-accent">CURRENT INDEX: DEMO DATA</span>
+          <span className="text-accent">CURRENT INDEX: MEASURED DATA</span>
         </div>
       </div>
     </footer>

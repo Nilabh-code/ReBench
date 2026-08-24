@@ -35,6 +35,7 @@ function generationTrace(tps: number, ttftMs: number, tokens: number): string {
 
 export default function RunSheet() {
   const r = referenceRecord();
+  if (!r) return <section className="border-b border-ink/25"><div className="mx-auto max-w-page px-6 py-20 mono text-sm tracking-[0.16em] text-stone">NO MEASURED RUNS YET — SUBMIT A RESULT TO POPULATE THE RUN SHEET.</div></section>;
   const trace = generationTrace(r.generationTPS, r.ttft, Math.min(r.generatedTokens, 512));
 
   return (
