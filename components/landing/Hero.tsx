@@ -7,6 +7,7 @@ import Link from "next/link";
 
 function TopRunsAscii() {
   const top = [...allRecords()].sort((a, b) => b.generationTPS - a.generationTPS).slice(0, 3);
+  if (!top.length) return null;
   const max = top[0].generationTPS;
   return (
     <div className="relative hidden max-w-[430px] border border-ink/30 bg-paper-dim/60 md:block" data-reveal style={{ "--reveal-delay": "400ms" } as React.CSSProperties}>
