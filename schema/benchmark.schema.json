@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/Nilabh-code/ReBench/blob/main/schema/benchmark.schema.json",
+  "title": "ReBench run record",
+  "description": "A single, fully specified inference benchmark run. One file per run in results/{family}/.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "model",
+    "family",
+    "modelRevision",
+    "quantization",
+    "hardware",
+    "gpuVendor",
+    "vram",
+    "ram",
+    "cpu",
+    "engine",
+    "engineVersion",
+    "benchmarkVersion",
+    "promptTokens",
+    "generatedTokens",
+    "promptTPS",
+    "generationTPS",
+    "ttft",
+    "score",
+    "contributor",
+    "timestamp",
+    "gitCommit",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^RUN-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{6}$",
+      "description": "Run identifier: RUN-YYYY-MM-DD-NNNNNN"
+    },
+    "model": { "type": "string", "minLength": 1 },
+    "family": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Model family slug; must match the results/ subdirectory."
+    },
+    "modelRevision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$",
+      "description": "Pinned model weights revision (commit hash)."
+    },
+    "quantization": { "type": "string", "minLength": 1 },
+    "hardware": { "type": "string", "minLength": 1 },
+    "gpuVendor": { "enum": ["NVIDIA", "AMD", "APPLE", "CPU"] },
+    "vram": { "type": "number", "minimum": 0, "description": "GB; unified memory on Apple silicon." },
+    "ram": { "type": "number", "minimum": 1 },
+    "cpu": { "type": "string", "minLength": 1 },
+    "engine": { "type": "string", "minLength": 1 },
+    "engineVersion": { "type": "string", "minLength": 1 },
+    "benchmarkVersion": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Semantic version of the runner/workload that produced the run."
+    },
+    "promptTokens": { "type": "integer", "minimum": 1 },
+    "generatedTokens": { "type": "integer", "minimum": 1 },
+    "promptTPS": { "type": "number", "minimum": 0, "description": "Prompt evaluation throughput, tokens/s." },
+    "generationTPS": { "type": "number", "minimum": 0, "description": "Generation throughput, tokens/s." },
+    "ttft": { "type": "number", "minimum": 0, "description": "Time to first token, ms." },
+    "score": { "type": "number", "minimum": 0, "maximum": 100, "description": "ReBench composite index, see methodology 07." },
+    "contributor": { "type": "string", "minLength": 1 },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "gitCommit": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+    "status": { "enum": ["VERIFIED", "REPRODUCED", "PENDING"] }
+  }
+}
