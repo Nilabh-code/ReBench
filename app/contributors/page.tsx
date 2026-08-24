@@ -120,7 +120,13 @@ export default function ContributorsPage() {
                     <td>
                       <span className="mono inline-flex items-center gap-2 font-semibold">
                         <span aria-hidden className="dot bg-ink/60" />
-                        @{p.handle}
+                        {p.github ? (
+                          <a href={p.github} target="_blank" rel="noreferrer" className="hover:text-accent">
+                            @{p.handle}
+                          </a>
+                        ) : (
+                          `@${p.handle}`
+                        )}
                       </span>
                     </td>
                     <td className="num font-semibold">{p.runs}</td>
@@ -130,12 +136,16 @@ export default function ContributorsPage() {
                       {p.hardware.join(", ")}
                     </td>
                     <td>
-                      <Link
-                        href={`/runs/${p.lastRun.id}`}
-                        className="text-graphite underline decoration-ink/30 underline-offset-2 hover:text-accent"
-                      >
-                        {fmtDate(p.lastRun.timestamp)} · ⋯{p.lastRun.id.slice(-6)}
-                      </Link>
+                      {p.lastRun ? (
+                        <Link
+                          href={`/runs/${p.lastRun.id}`}
+                          className="text-graphite underline decoration-ink/30 underline-offset-2 hover:text-accent"
+                        >
+                          {fmtDate(p.lastRun.timestamp)} · ⋯{p.lastRun.id.slice(-6)}
+                        </Link>
+                      ) : (
+                        <span className="text-stone">NO RUNS YET</span>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -143,7 +153,7 @@ export default function ContributorsPage() {
             </table>
           </div>
           <p className="mono mt-4 text-[0.625rem] tracking-[0.18em] text-stone">
-            HANDLES MAP TO GITHUB ACCOUNTS · STATS GENERATED FROM results/ · DEMO DATA
+            HANDLES MAP TO GITHUB ACCOUNTS · STATS GENERATED FROM results/ · REGISTERED COLLABORATORS MAY HAVE 0 RUNS
           </p>
         </div>
       </div>

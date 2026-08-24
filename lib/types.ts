@@ -54,11 +54,14 @@ export interface ModelAggregate {
 
 export interface ContributorAggregate {
   handle: string;
+  name?: string;
+  github?: string;
+  role?: string;
   runs: number;
   verified: number;
   families: string[];
   hardware: string[];
-  lastRun: BenchmarkRecord;
+  lastRun?: BenchmarkRecord;
 }
 
 export interface HardwareSlice {

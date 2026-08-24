@@ -1,4 +1,5 @@
 import raw from "../data/benchmarks.json";
+import contributorRoster from "../data/contributors.json";
 import type {
   BenchmarkRecord,
   ContributorAggregate,
@@ -74,8 +75,25 @@ export function aggregateContributors(): ContributorAggregate[] {
     list.push(r);
     map.set(r.contributor, list);
   }
-  const out: ContributorAggregate[] = [];
+
+  const out: ContributorAggregate[] = contributorRoster.map((person) => {
+    const runs = map.get(person.handle) ?? [];
+    const sorted = [...runs].sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+    return {
+      handle: person.handle,
+      name: person.name,
+      github: person.github,
+      role: person.role,
+      runs: runs.length,
+      verified: runs.filter((r) => r.status === "VERIFIED").length,
+      families: [...new Set(runs.map((r) => r.family))].sort(),
+      hardware: [...new Set(runs.map((r) => r.hardware))].sort(),
+      lastRun: sorted[0],
+    };
+  });
+
   for (const [handle, runs] of map) {
+    if (out.some((person) => person.handle === handle)) continue;
     const sorted = [...runs].sort((a, b) => b.timestamp.localeCompare(a.timestamp));
     out.push({
       handle,
@@ -86,7 +104,8 @@ export function aggregateContributors(): ContributorAggregate[] {
       lastRun: sorted[0],
     });
   }
-  return out.sort((a, b) => b.runs - a.runs);
+
+  return out.sort((a, b) => b.runs - a.runs || a.handle.localeCompare(b.handle));
 }
 
 export function hardwareSlices(): HardwareSlice[] {
