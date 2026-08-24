@@ -2,13 +2,15 @@
   "name": "rebench",
   "version": "1.2.0",
   "private": true,
-  "description": "ReBench — open, reproducible AI benchmarks. AI benchmarks shouldn't be trusted. They should be reproduced.",
+  "description": "ReBench \u2014 open, reproducible AI benchmarks. AI benchmarks shouldn't be trusted. They should be reproduced.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "test": "node --test scripts/*.test.mjs",
+    "validate": "node scripts/validate-data.mjs",
     "generate:data": "node scripts/generate-data.mjs"
   },
   "dependencies": {
@@ -22,6 +24,7 @@
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
     "@types/three": "^0.170.0",
+    "ajv": "^8.20.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
     "eslint-config-next": "^15.3.3",

@@ -1,61 +1,108 @@
-// Minimal dependency-free validator for data/benchmarks.json against
-// schema/benchmark.schema.json (subset of JSON Schema we actually use).
-// Runs in CI and locally:  node scripts/validate-data.mjs
+// Validates data/benchmarks.json against schema/. Runs in CI and locally:
+//
+//   node scripts/validate-data.mjs
+//
+// Two layers, deliberately separate:
+//   1. JSON Schema (ajv, draft-07) — shape, types, patterns, bounds, unknown
+//      fields, array size. The schemas are the contract; none of it is
+//      restated here, so the two cannot drift.
+//   2. Cross-field invariants — coherence no schema can express. These are the
+//      checks that catch a record which is plausible field by field and
+//      impossible as a whole.
 
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
+
+import Ajv from "ajv";
+
+import { runId } from "./run-id.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const schema = JSON.parse(readFileSync(join(ROOT, "schema", "benchmark.schema.json"), "utf8"));
-const data = JSON.parse(readFileSync(join(ROOT, "data", "benchmarks.json"), "utf8"));
+const read = (...p) => JSON.parse(readFileSync(join(ROOT, ...p), "utf8"));
 
-const errors = [];
-const required = schema.required ?? [];
-const props = schema.properties ?? {};
+const ajv = new Ajv({ allErrors: true, strict: true });
+ajv.addSchema(read("schema", "benchmark.schema.json"));
+const validateSchema = ajv.compile(read("schema", "index.schema.json"));
 
-const checkString = (v) => typeof v === "string";
-const checkNumber = (v) => typeof v === "number" && Number.isFinite(v);
-const checkInteger = (v) => Number.isInteger(v);
+/**
+ * Returns the validation errors for an index object; empty means valid.
+ * Exported so scripts/validate-data.test.mjs can exercise it on crafted input
+ * without touching data/benchmarks.json.
+ */
+export function validateIndex(data) {
+  const errors = [];
 
-function matchPattern(v, pattern) {
-  return new RegExp(pattern).test(v);
-}
-
-if (!Array.isArray(data.records)) {
-  errors.push("records must be an array");
-} else {
-  const seen = new Set();
-  data.records.forEach((r, i) => {
-    const at = `records[${i}] (${r?.id ?? "?"})`;
-    for (const key of required) {
-      if (!(key in r)) errors.push(`${at}: missing field "${key}"`);
+  // ---------------------------------------------------------- layer 1: schema
+  if (!validateSchema(data)) {
+    for (const e of validateSchema.errors) {
+      const extra = e.params?.additionalProperty ? ` ("${e.params.additionalProperty}")` : "";
+      errors.push(`${e.instancePath || "<root>"} ${e.message}${extra}`);
     }
-    for (const [key, spec] of Object.entries(props)) {
-      if (!(key in r)) continue;
-      const v = r[key];
-      if (spec.type === "string" && !checkString(v)) errors.push(`${at}: "${key}" must be a string`);
-      if (spec.type === "number" && !checkNumber(v)) errors.push(`${at}: "${key}" must be a number`);
-      if (spec.type === "integer" && !checkInteger(v)) errors.push(`${at}: "${key}" must be an integer`);
-      if (typeof v === "string" && spec.pattern && !matchPattern(v, spec.pattern)) {
-        errors.push(`${at}: "${key}" fails pattern ${spec.pattern}`);
-      }
-      if (spec.enum && !spec.enum.includes(v)) errors.push(`${at}: "${key}" must be one of ${spec.enum.join("|")}`);
-      if (typeof v === "number" && spec.minimum !== undefined && v < spec.minimum) {
-        errors.push(`${at}: "${key}" below minimum ${spec.minimum}`);
-      }
-      if (typeof v === "number" && spec.maximum !== undefined && v > spec.maximum) {
-        errors.push(`${at}: "${key}" above maximum ${spec.maximum}`);
-      }
+  }
+
+  // --------------------------------------------- layer 2: cross-field checks
+  // Only meaningful once the shape is known good: on a schema failure the
+  // fields these read may not exist.
+  if (errors.length) return errors;
+
+  const seen = new Map();
+
+  for (const [i, r] of data.records.entries()) {
+    const at = `records[${i}] (${r.id})`;
+
+    // The id is content-addressed: derived, never chosen. This also catches a
+    // record edited after the fact without its id being recomputed.
+    const expected = runId(r);
+    if (r.id !== expected) {
+      errors.push(`${at}: id is not the content hash of the record (expected ${expected})`);
     }
-    if (seen.has(r.id)) errors.push(`${at}: duplicate id`);
-    seen.add(r.id);
-  });
+
+    // The id doubles as the results/ filename, so a collision is a silent
+    // overwrite rather than a merge conflict.
+    if (seen.has(r.id)) {
+      errors.push(`${at}: duplicate id, already at records[${seen.get(r.id)}]`);
+    }
+    seen.set(r.id, i);
+
+    // A prompt of N tokens evaluated at P tok/s cannot yield a first token
+    // before N/P seconds — nor much after that plus launch overhead.
+    const prefillMs = (r.promptTokens / r.promptTPS) * 1000;
+    if (r.ttft < prefillMs * 0.9) {
+      errors.push(
+        `${at}: ttft ${r.ttft} ms is below the ${Math.round(prefillMs)} ms of prefill implied ` +
+          `by promptTokens/promptTPS (${r.promptTokens} / ${r.promptTPS})`
+      );
+    }
+    if (r.ttft > prefillMs * 1.1 + 150) {
+      errors.push(
+        `${at}: ttft ${r.ttft} ms far exceeds the ${Math.round(prefillMs)} ms of prefill ` +
+          `implied by promptTokens/promptTPS — one of the three is wrong`
+      );
+    }
+
+    // A run cannot postdate the index that indexes it.
+    if (r.timestamp > data.generated) {
+      errors.push(`${at}: timestamp is after the index's generated stamp (${data.generated})`);
+    }
+  }
+
+  return errors;
 }
 
-if (errors.length) {
-  console.error(`✗ ${errors.length} validation error(s):`);
-  for (const e of errors) console.error("  - " + e);
-  process.exit(1);
+// ------------------------------------------------------------------------ cli
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const data = read("data", "benchmarks.json");
+  const errors = validateIndex(data);
+
+  if (errors.length) {
+    console.error(`✗ ${errors.length} validation error(s) in data/benchmarks.json:`);
+    for (const e of errors) console.error("  - " + e);
+    process.exit(1);
+  }
+
+  console.log(
+    `✓ ${data.records.length} records valid: schema/index.schema.json + ` +
+      `schema/benchmark.schema.json, ids content-addressed, prefill/ttft coherent`
+  );
 }
-console.log(`✓ ${data.records.length} records valid against schema/benchmark.schema.json`);

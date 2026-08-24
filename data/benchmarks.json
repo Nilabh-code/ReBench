@@ -1,5 +1,5 @@
 {
-  "$schema": "./schema/benchmark.schema.json",
+  "$schema": "./schema/index.schema.json",
   "generated": "2026-08-24T23:59:59Z",
   "generator": "scripts/generate-data.mjs",
   "demo": true,

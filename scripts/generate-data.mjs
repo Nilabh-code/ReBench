@@ -11,10 +11,11 @@
 // (memory-bandwidth-bound generation, compute-bound prompt processing) so the
 // demo data is internally plausible, but none of it was measured.
 
-import { createHash } from "node:crypto";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { runId } from "./run-id.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -191,19 +192,6 @@ function refGen(model) {
   return (1008 * 0.68) / gb;
 }
 
-// Run id: run date plus 6 hex of a content hash over the fields that identify
-// the run. A global counter collides as soon as two contributors submit on the
-// same day, and the id doubles as the results/ filename.
-function runId(rec) {
-  const key = [
-    rec.model, rec.family, rec.modelRevision, rec.quantization, rec.hardware,
-    rec.engine, rec.engineVersion, rec.promptTokens, rec.generatedTokens,
-    rec.contributor, rec.timestamp,
-  ].join("|");
-  const digest = createHash("sha256").update(key).digest("hex").slice(0, 6);
-  return `RUN-${rec.timestamp.slice(0, 10)}-${digest}`;
-}
-
 const records = runs.map((r) => ({
   model: r.model.name,
   family: r.model.family,
@@ -238,7 +226,7 @@ if (ids.size !== records.length) {
 
 // ------------------------------------------------------------------- output
 const out = {
-  $schema: "./schema/benchmark.schema.json",
+  $schema: "./schema/index.schema.json",
   generated: "2026-08-24T23:59:59Z",
   generator: "scripts/generate-data.mjs",
   demo: true,
