@@ -44,6 +44,13 @@ jobs:
           npm run generate:data
           git diff --exit-code -- data/benchmarks.json
 
+      # lib/schema-types.ts is generated from schema/. Same rule as the index:
+      # edit the schema, not the types.
+      - name: Types match the schema
+        run: |
+          npm run generate:types
+          git diff --exit-code -- lib/schema-types.ts
+
       - name: Typecheck
         run: npm run typecheck
 

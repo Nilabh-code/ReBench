@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "node --test scripts/*.test.mjs",
     "validate": "node scripts/validate-data.mjs",
-    "generate:data": "node scripts/generate-data.mjs"
+    "generate:data": "node scripts/generate-data.mjs",
+    "generate:types": "node scripts/generate-types.mjs"
   },
   "dependencies": {
     "next": "^15.3.3",
