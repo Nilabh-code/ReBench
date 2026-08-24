@@ -15,7 +15,8 @@ const config: Config = {
         ink: "#161310",
         "ink-soft": "#2C2820",
         graphite: "#4A443A",
-        stone: "#8B8373",
+        // Keep in sync with --stone in app/globals.css (WCAG AA on --paper).
+        stone: "#686256",
         "stone-l": "#B8B09E",
         accent: {
           DEFAULT: "#D53A0C",

@@ -9,7 +9,8 @@
   --ink: #161310;
   --ink-soft: #2c2820;
   --graphite: #4a443a;
-  --stone: #8b8373;
+  /* WCAG AA: 5.17:1 on --paper, 4.68:1 on --paper-dim (was #8b8373 = 3.21:1). */
+  --stone: #686256;
   --stone-l: #b8b09e;
   --accent: #d53a0c;
   --night: #141210;
