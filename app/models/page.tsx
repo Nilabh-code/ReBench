@@ -8,21 +8,22 @@ export const metadata = { title: "Models" };
 export default function ModelsPage() {
   const models = aggregateModels();
   const maxGen = Math.max(1, ...models.map((m) => m.bestGenerationTPS));
+  const families = new Set(models.map((m) => m.family)).size;
 
   return (
     <>
       <PageHead
         crumb="MODELS"
-        title="Model families"
-        desc="Same model, different machine, different number. Families are grouped by results/ directory; every row below is a real run record with its own commit."
+        title="Models"
+        desc="Same model, different machine, different number. One section per model, grouped under the results/ directory of its family. Tokens/s is only comparable within a model."
       />
 
       <div className="mx-auto w-full max-w-page px-6 py-12 md:px-10 lg:py-16">
         {/* overview */}
-        <SectionHead no="A" title="BEST OBSERVED GENERATION / FAMILY" note="MEASURED DATA" />
+        <SectionHead no="A" title="BEST OBSERVED GENERATION / MODEL" note="MEASURED DATA" />
         <ul className="mono mt-5 space-y-2.5 text-[0.6875rem]" data-reveal>
           {models.map((m) => (
-            <li key={m.family} className="flex flex-wrap items-center gap-3 sm:flex-nowrap">
+            <li key={m.model} className="flex flex-wrap items-center gap-3 sm:flex-nowrap">
               <span className="w-44 shrink-0 truncate tracking-[0.08em] text-graphite">
                 {m.model.toUpperCase()}
               </span>
@@ -41,7 +42,7 @@ export default function ModelsPage() {
         <div className="mt-16 space-y-14">
           {!models.length ? <p className="border border-ink/20 bg-paper-dim/50 p-5 mono text-[0.625rem] tracking-[0.16em] text-stone">NO MEASURED MODEL RECORDS YET.</p> : null}
           {models.map((fam, fi) => (
-            <section key={fam.family} aria-label={fam.model}>
+            <section key={fam.model} aria-label={fam.model}>
               <div className="flex flex-wrap items-baseline gap-x-5 gap-y-2 border-b border-ink/40 pb-3" data-reveal>
                 <span className="mono text-[0.625rem] tracking-[0.22em] text-stone">
                   {String(fi + 1).padStart(2, "0")} /
@@ -91,14 +92,14 @@ export default function ModelsPage() {
               </div>
 
               <pre aria-hidden className="mono mt-3 hidden overflow-x-auto text-[0.625rem] leading-[1.6] text-stone lg:block" data-reveal>
-                {`${fam.family.padEnd(10)} gen tok/s  ${asciiBar(fam.bestGenerationTPS, maxGen, 32)}  ${fmtNum(fam.bestGenerationTPS, 1)}`}
+                {`${fam.model.padEnd(24)} gen tok/s  ${asciiBar(fam.bestGenerationTPS, maxGen, 32)}  ${fmtNum(fam.bestGenerationTPS, 1)}`}
               </pre>
             </section>
           ))}
         </div>
 
         <p className="mono mt-14 border-t border-ink/25 pt-6 text-center text-[0.625rem] tracking-[0.2em] text-stone">
-          {allRecords().length} RUNS ACROSS {models.length} FAMILIES · INDEX: MEASURED DATA
+          {allRecords().length} RUNS ACROSS {models.length} MODELS · {families} FAMILIES · INDEX: MEASURED DATA
         </p>
       </div>
     </>
