@@ -34,10 +34,10 @@ export default function ProcessFlow() {
               <li key={n.idx} className="flex flex-col">
                 <span
                   className="relative z-10 ml-1 h-[13px] w-[13px] shrink-0 border border-ink bg-paper"
-                  style={{ animation: `node-pulse 1.6s ease-in-out ${i * 0.28}s infinite` }}
+                  style={{ animation: `node-pulse 1.6s ease-in-out ${(i * 0.28).toFixed(2)}s infinite` }}
                   aria-hidden
                 />
-                <div className="mt-5 border border-ink/40 bg-paper p-4">
+                <div className="mt-5 flex flex-1 flex-col border border-ink/40 bg-paper p-4">
                   <span className="mono text-[0.5625rem] tracking-[0.26em] text-stone">{n.idx}</span>
                   <span className="font-disp mt-1 block text-[0.9375rem] font-bold leading-tight">{n.title}</span>
                   <span className="mono mt-2 block text-[0.5625rem] leading-relaxed tracking-[0.08em] text-graphite">{n.note}</span>

@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { REPO_URL } from "../lib/data";
+import ThemeToggle from "./ThemeToggle";
+import { BUILD_DATE, DISCORD_URL, REPO_URL } from "../lib/data";
 
 const LINKS = [
   { href: "/benchmarks", label: "BENCHMARKS", idx: "01" },
@@ -33,7 +34,7 @@ function Wordmark() {
       </svg>
       <span className="mono text-sm font-semibold tracking-[0.24em]">
         REBENCH
-        <span className="blink text-accent">▮</span>
+        <span aria-hidden className="blink text-accent">▮</span>
       </span>
     </Link>
   );
@@ -59,7 +60,9 @@ export default function Nav({ runs }: { runs: number }) {
             <span className="dot bg-accent" />
             SYSTEM NOMINAL
           </span>
-          <span className="hidden md:block">{runs} RUNS INDEXED · REV 2026-08-24</span>
+          <span className="hidden md:block">
+            {runs} RUNS INDEXED{BUILD_DATE ? ` · REV ${BUILD_DATE}` : ""}
+          </span>
           <span className="flex items-center gap-3">
             <span className="text-accent">MEASURED DATA</span>
             <UtcClock />
@@ -87,6 +90,15 @@ export default function Nav({ runs }: { runs: number }) {
           })}
         </nav>
         <div className="hidden items-center gap-5 lg:flex">
+          <ThemeToggle />
+          <a
+            href={DISCORD_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mono text-[0.6875rem] tracking-[0.18em] text-graphite hover:text-accent"
+          >
+            DISCORD ↗
+          </a>
           <a
             href={REPO_URL}
             target="_blank"
@@ -105,7 +117,7 @@ export default function Nav({ runs }: { runs: number }) {
           className="mono flex items-center gap-2 border border-ink px-3 py-1.5 text-[0.6875rem] tracking-[0.18em] lg:hidden"
           onClick={() => setOpen(!open)}
           aria-expanded={open}
-          aria-label="Menu"
+          aria-controls="mobile-nav"
         >
           {open ? "CLOSE" : "MENU"}
         </button>
@@ -113,7 +125,7 @@ export default function Nav({ runs }: { runs: number }) {
 
       {/* mobile overlay */}
       {open ? (
-        <div className="absolute left-0 right-0 top-full z-40 max-h-[calc(100vh-52px)] overflow-y-auto border-b border-ink/25 bg-paper shadow-[0_8px_0_rgba(22,19,16,0.08)] lg:hidden">
+        <div id="mobile-nav" className="absolute left-0 right-0 top-full z-40 max-h-[calc(100vh-52px)] overflow-y-auto border-b border-ink/25 bg-paper shadow-[0_8px_0_rgba(22,19,16,0.08)] lg:hidden">
           <div className="flex flex-col px-6 pb-10 pt-4">
             <nav className="flex flex-col" aria-label="Mobile">
               {LINKS.map((l) => (
@@ -132,6 +144,15 @@ export default function Nav({ runs }: { runs: number }) {
               <Link href="/methodology#run" onClick={() => setOpen(false)} className="btn btn-solid justify-center">
                 RUN A BENCHMARK
               </Link>
+              <ThemeToggle variant="button" />
+              <a
+                href={DISCORD_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-line justify-center"
+              >
+                JOIN DISCORD ↗
+              </a>
               <a
                 href={REPO_URL}
                 target="_blank"

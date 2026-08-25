@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { REPO_URL } from "../../lib/data";
+import { DISCORD_URL, REPO_URL } from "../../lib/data";
 
 export default function FinalCall() {
   return (
@@ -36,6 +36,9 @@ export default function FinalCall() {
           <Link href="/methodology#run" className="btn btn-night">
             RUN A BENCHMARK →
           </Link>
+          <a href={DISCORD_URL} target="_blank" rel="noopener noreferrer" className="mono link-u !text-night-paper hover:!text-accent">
+            JOIN DISCORD ↗
+          </a>
           <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className="mono link-u !text-night-paper hover:!text-accent">
             VIEW SOURCE ↗
           </a>

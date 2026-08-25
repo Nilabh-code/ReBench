@@ -9,25 +9,25 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        paper: "#F1EDE2",
-        "paper-dim": "#E7E2D4",
-        "paper-dark": "#DDD6C3",
-        ink: "#161310",
-        "ink-soft": "#2C2820",
-        graphite: "#4A443A",
-        // Keep in sync with --stone in app/globals.css (WCAG AA on --paper).
-        stone: "#686256",
-        "stone-l": "#B8B09E",
+        paper: "rgb(var(--paper) / <alpha-value>)",
+        "paper-dim": "rgb(var(--paper-dim) / <alpha-value>)",
+        "paper-dark": "rgb(var(--paper-dark) / <alpha-value>)",
+        ink: "rgb(var(--ink) / <alpha-value>)",
+        "ink-soft": "rgb(var(--ink-soft) / <alpha-value>)",
+        graphite: "rgb(var(--graphite) / <alpha-value>)",
+        // Tokens resolve per-theme from app/globals.css (:root / [data-theme="dark"]).
+        stone: "rgb(var(--stone) / <alpha-value>)",
+        "stone-l": "rgb(var(--stone-l) / <alpha-value>)",
         accent: {
-          DEFAULT: "#D53A0C",
-          deep: "#A82C06",
+          DEFAULT: "rgb(var(--accent) / <alpha-value>)",
+          deep: "rgb(var(--accent-deep) / <alpha-value>)",
         },
         night: {
-          DEFAULT: "#141210",
-          raise: "#1D1A16",
-          edge: "#2E2A23",
-          fog: "#93897A",
-          paper: "#E8E2D2",
+          DEFAULT: "rgb(var(--night) / <alpha-value>)",
+          raise: "rgb(var(--night-raise) / <alpha-value>)",
+          edge: "rgb(var(--night-edge) / <alpha-value>)",
+          fog: "rgb(var(--night-fog) / <alpha-value>)",
+          paper: "rgb(var(--night-paper) / <alpha-value>)",
         },
       },
       fontFamily: {

@@ -20,9 +20,9 @@ export function SectionHead({
       <span className={`mono text-[0.6875rem] tracking-[0.18em] ${night ? "text-night-fog" : "text-stone"}`}>
         {no}
       </span>
-      <h2 className="mono text-[0.6875rem] font-semibold uppercase tracking-[0.22em] sm:text-xs">
+      <p className="mono text-[0.6875rem] font-semibold uppercase tracking-[0.22em] sm:text-xs">
         {title}
-      </h2>
+      </p>
       {note ? (
         <span className={`mono ml-auto hidden text-[0.625rem] tracking-[0.14em] sm:block ${night ? "text-night-fog" : "text-stone"}`}>
           {note}

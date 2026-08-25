@@ -138,11 +138,11 @@ export default async function RunPage({ params }: { params: Promise<{ id: string
 
               <div className="mt-5">
                 <svg viewBox="0 0 100 32" className="h-24 w-full" preserveAspectRatio="none" role="img" aria-label="Instantaneous generation throughput trace">
-                  <g stroke="rgba(22,19,16,0.15)" strokeWidth="0.3">
+                  <g stroke="currentColor" strokeOpacity="0.15" strokeWidth="0.3">
                     {[8, 16, 24].map((y) => <line key={y} x1="0" y1={y} x2="100" y2={y} />)}
                   </g>
-                  <polyline points={trace} fill="none" stroke="#161310" strokeWidth="0.8" strokeLinejoin="round" />
-                  <line x1="8" y1="0" x2="8" y2="32" stroke="#d53a0c" strokeWidth="0.5" strokeDasharray="1.5 1.5" />
+                  <polyline points={trace} fill="none" stroke="currentColor" strokeWidth="0.8" strokeLinejoin="round" />
+                  <line x1="8" y1="0" x2="8" y2="32" className="text-accent" stroke="currentColor" strokeWidth="0.5" strokeDasharray="1.5 1.5" />
                 </svg>
                 <FigLabel className="flex justify-between">
                   <span>INST. TOK/S — FIRST 512 TOKENS</span>

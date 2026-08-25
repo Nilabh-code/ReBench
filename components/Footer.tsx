@@ -1,28 +1,30 @@
 import Link from "next/link";
-import { BUILD_HASH, REPO_URL } from "../lib/data";
-
-const COLS = [
-  {
-    head: "INDEX",
-    links: [
-      { label: "GitHub ↗", href: REPO_URL, external: true },
-      { label: "Benchmarks", href: "/benchmarks" },
-      { label: "Models", href: "/models" },
-      { label: "Methodology", href: "/methodology" },
-      { label: "Contributors", href: "/contributors" },
-    ],
-  },
-  {
-    head: "RECORDS",
-    links: [
-      { label: "Result schema ↗", href: `${REPO_URL}/blob/main/schema/benchmark.schema.json`, external: true },
-      { label: "Run index ↗", href: `${REPO_URL}/blob/main/data/benchmarks.json`, external: true },
-      { label: "Reference run", href: "/runs/RUN-2026-08-24-000184" },
-    ],
-  },
-];
+import { BUILD_HASH, DISCORD_URL, REPO_URL, referenceRecord } from "../lib/data";
 
 export default function Footer() {
+  const reference = referenceRecord();
+  const cols = [
+    {
+      head: "INDEX",
+      links: [
+        { label: "GitHub ↗", href: REPO_URL, external: true },
+        { label: "Discord ↗", href: DISCORD_URL, external: true },
+        { label: "Benchmarks", href: "/benchmarks" },
+        { label: "Models", href: "/models" },
+        { label: "Methodology", href: "/methodology" },
+        { label: "Contributors", href: "/contributors" },
+      ],
+    },
+    {
+      head: "RECORDS",
+      links: [
+        { label: "Result schema ↗", href: `${REPO_URL}/blob/main/schema/benchmark.schema.json`, external: true },
+        { label: "Run index ↗", href: `${REPO_URL}/blob/main/data/benchmarks.json`, external: true },
+        ...(reference ? [{ label: "Reference run", href: `/runs/${reference.id}`, external: false }] : []),
+      ],
+    },
+  ];
+
   return (
     <footer className="border-t border-ink/25 bg-paper-dim">
       <div className="mx-auto w-full max-w-page px-6 py-12 md:px-10">
@@ -36,8 +38,8 @@ export default function Footer() {
               EVERY NUMBER → A RUN. EVERY RUN → A COMMIT.
             </p>
           </div>
-          {COLS.map((col) => (
-            <div key={col.head}>
+          {cols.map((col) => (
+            <nav key={col.head} aria-label={`Footer — ${col.head}`}>
               <p className="mono text-[0.625rem] tracking-[0.22em] text-stone">{col.head}</p>
               <ul className="mt-4 space-y-2.5">
                 {col.links.map((l) => (
@@ -59,14 +61,18 @@ export default function Footer() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </nav>
           ))}
         </div>
 
         <div className="mono mt-12 flex flex-col gap-2 border-t border-ink/20 pt-5 text-[0.625rem] tracking-[0.16em] text-stone sm:flex-row sm:items-center sm:justify-between">
           <span>© 2026 REBENCH CONTRIBUTORS · MIT LICENSE</span>
           <span>
-            BUILD <span className="text-ink">{BUILD_HASH}</span> · RUNNER v1.2.0
+            {BUILD_HASH ? (
+              <>BUILD <span className="text-ink">{BUILD_HASH}</span> · RUNNER v1.2.0</>
+            ) : (
+              <>RUNNER v1.2.0</>
+            )}
           </span>
           <span className="text-accent">CURRENT INDEX: MEASURED DATA</span>
         </div>
