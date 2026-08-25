@@ -1,16 +1,12 @@
 import RepoTree from "../RepoTree";
 import { CornerMarks, SectionHead } from "../ui";
-import { REPO_URL } from "../../lib/data";
-
-const COMMITS = [
-  { hash: "a1f3c9e", msg: "results: add RUN-2026-08-24-000184 (qwen3-27b / q4_k_m)", time: "2h" },
-  { hash: "9b2d4f7", msg: "verify: mark RUN-2026-08-23-000182 as VERIFIED", time: "9h" },
-  { hash: "c4e81a2", msg: "results: reproduce llama-3.1-70b on a100 (2nd machine)", time: "1d" },
-  { hash: "7f05b3d", msg: "schema: tighten ttft bounds in benchmark.schema.json", time: "3d" },
-  { hash: "e2a96c1", msg: "runner: fix warmup iteration counted in ttft", time: "5d" },
-];
+import { allRecords, REPO_URL } from "../../lib/data";
 
 export default function GithubSection() {
+  const commits = allRecords()
+    .slice(0, 5)
+    .map((r) => ({ id: r.id, hash: r.gitCommit.slice(0, 7), msg: `results: add ${r.id} (${r.model} / ${r.quantization})` }));
+
   return (
     <section className="night-grid bg-night text-night-paper">
       <div className="mx-auto w-full max-w-page px-6 py-20 md:px-10 lg:py-24">
@@ -32,22 +28,27 @@ export default function GithubSection() {
               the site — that is the guarantee.
             </p>
 
-            {/* commit feed */}
+            {/* commit feed — rendered from the real index, empty until the first measured run lands */}
             <div className="relative mt-8" data-reveal style={{ "--reveal-delay": "150ms" } as React.CSSProperties}>
               <CornerMarks light />
               <div className="border border-night-edge">
-                {COMMITS.map((c, i) => (
-                  <div
-                    key={c.hash}
-                    className={`mono flex items-baseline gap-3 px-4 py-2.5 text-[0.6875rem] ${
-                      i > 0 ? "border-t border-night-edge" : ""
-                    }`}
-                  >
-                    <span className="shrink-0 text-accent">{c.hash}</span>
-                    <span className="truncate text-night-paper/90">{c.msg}</span>
-                    <span className="ml-auto shrink-0 text-night-fog">{c.time}</span>
+                {commits.length ? (
+                  commits.map((c, i) => (
+                    <div
+                      key={c.id}
+                      className={`mono flex items-baseline gap-3 px-4 py-2.5 text-[0.6875rem] ${
+                        i > 0 ? "border-t border-night-edge" : ""
+                      }`}
+                    >
+                      <span className="shrink-0 text-accent">{c.hash}</span>
+                      <span className="truncate text-night-paper/90">{c.msg}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="mono px-4 py-5 text-[0.6875rem] tracking-[0.16em] text-night-fog">
+                    NO MEASURED RUNS COMMITTED YET · THIS FEED RENDERS FROM results/ — NOTHING HERE IS SYNTHESIZED
                   </div>
-                ))}
+                )}
               </div>
             </div>
 
@@ -64,7 +65,7 @@ export default function GithubSection() {
           <div data-reveal style={{ "--reveal-delay": "220ms" } as React.CSSProperties}>
             <RepoTree />
             <p className="mono mt-2 flex justify-between text-[0.5625rem] tracking-[0.2em] text-night-fog">
-              <span>FIG.02 — LIVE REPOSITORY TREE</span>
+              <span>FIG.02 — REPOSITORY TREE</span>
               <span>READ-ONLY VIEW</span>
             </p>
           </div>

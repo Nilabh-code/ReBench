@@ -6,7 +6,17 @@ const MISSING = ["GPU", "QUANTIZATION", "ENGINE", "ENGINE VERSION", "PROMPT LENG
 
 export default function Reproducibility() {
   const r = referenceRecord();
-  if (!r) return <section className="border-b border-ink/25"><div className="mx-auto max-w-page px-6 py-20 mono text-sm tracking-[0.16em] text-stone">NO MEASURED RUNS YET — REPRODUCIBILITY DATA WILL APPEAR AFTER THE FIRST RUN.</div></section>;
+  if (!r)
+    return (
+      <section className="border-b border-ink/25 bg-paper-dim/50">
+        <div className="mx-auto w-full max-w-page px-6 py-20 md:px-10">
+          <SectionHead no="SEC.06 / CONTROL" title="CLAIM vs RECORD" note="SAME NUMBER · DIFFERENT VALUE" />
+          <p className="mono mt-12 text-sm tracking-[0.16em] text-stone">
+            NO MEASURED RUNS YET — REPRODUCIBILITY DATA WILL APPEAR AFTER THE FIRST RUN.
+          </p>
+        </div>
+      </section>
+    );
 
   return (
     <section className="border-b border-ink/25 bg-paper-dim/50">

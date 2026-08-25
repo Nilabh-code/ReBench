@@ -4,22 +4,22 @@ import { useEffect, useMemo, useState } from "react";
 
 const TREE = [
   "ReBench/",
+  "├── app/",
   "├── benchmark/",
-  "│   ├── runner/",
-  "│   └── tests/",
-  "├── results/",
-  "│   ├── qwen/",
-  "│   ├── llama/",
-  "│   └── deepseek/",
-  "├── schema/",
-  "│   └── benchmark.schema.json",
+  "│   ├── runner.py",
+  "│   └── performance.json",
+  "├── components/",
   "├── data/",
   "│   └── benchmarks.json",
-  "├── website/",
+  "├── results/",
+  "│   └── {family}/",
+  "├── schema/",
+  "│   └── benchmark.schema.json",
+  "├── scripts/",
   "└── README.md",
 ];
 
-const HIGHLIGHTS = [5, 9, 11, 4, 13]; // qwen/ → schema → index → results/ → README
+const HIGHLIGHTS = [8, 10, 6, 13]; // results/ → schema → index → README
 
 export default function RepoTree() {
   const full = useMemo(() => TREE.join("\n"), []);
@@ -64,7 +64,7 @@ export default function RepoTree() {
           main · public
         </span>
       </div>
-      <pre className="mono min-h-[264px] px-4 py-4 text-[0.75rem] leading-[1.9] text-night-paper sm:min-h-[296px] sm:text-[0.8125rem]">
+      <div className="mono min-h-[264px] whitespace-pre px-4 py-4 text-[0.75rem] leading-[1.9] text-night-paper sm:min-h-[296px] sm:text-[0.8125rem]">
         {shown.map((line, i) => {
           const active = done && HIGHLIGHTS[hl] === i;
           return (
@@ -74,16 +74,16 @@ export default function RepoTree() {
                 active ? "bg-night-edge text-white" : ""
               }`}
             >
-              {active ? <span className="text-accent">▸</span> : <span className="text-transparent">▸</span>}
+              <span aria-hidden className={active ? "text-accent" : "invisible"}>▸</span>
               <span>{line}</span>
-              {active && line.includes("qwen/") ? (
-                <span className="ml-auto text-[0.625rem] text-night-fog">184 files</span>
+              {active && line.includes("results/") ? (
+                <span className="ml-auto text-[0.625rem] text-night-fog">awaiting first run</span>
               ) : null}
             </div>
           );
         })}
-        {!done ? <span className="blink text-accent">▮</span> : <span className="text-night-fog">— end of tree —</span>}
-      </pre>
+        {!done ? <span aria-hidden className="blink text-accent">▮</span> : <span className="text-night-fog">— end of tree —</span>}
+      </div>
     </div>
   );
 }

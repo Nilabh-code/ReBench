@@ -169,7 +169,12 @@ export function statusCounts(): Record<string, number> {
 }
 
 export const REPO_URL = "https://github.com/Nilabh-code/ReBench";
-export const BUILD_HASH = "a1f3c9e";
+export const DISCORD_URL = "https://discord.gg/rpsxH4Ss7k";
+
+// Injected at build time (see .github/workflows/pages.yml). Empty strings in
+// local dev mean "no provenance stamped" rather than a fabricated hash.
+export const BUILD_HASH = (process.env.NEXT_PUBLIC_BUILD_HASH ?? "").slice(0, 7);
+export const BUILD_DATE = process.env.NEXT_PUBLIC_BUILD_DATE ?? "";
 
 export function resultFileUrl(r: BenchmarkRecord): string {
   return `${REPO_URL}/blob/main/results/${r.family}/${r.id}.json`;

@@ -66,12 +66,14 @@ export default function Problem() {
               <div aria-hidden className="absolute left-1/2 top-0 h-full w-px bg-night-edge" />
               <div aria-hidden className="absolute left-0 top-1/2 h-px w-full bg-night-edge" />
 
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center" data-reveal>
-                <span className="mono block text-[0.5625rem] tracking-[0.28em] text-night-fog">REPORTED VALUE</span>
-                <span className="font-disp strike-line clip-numeric block text-[clamp(4rem,11vw,7rem)] font-extrabold leading-none">
-                  80
-                </span>
-                <span className="mono block text-[0.625rem] tracking-[0.3em] text-night-fog">TOK/S</span>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center" data-reveal>
+                  <span className="mono block text-[0.5625rem] tracking-[0.28em] text-night-fog">REPORTED VALUE</span>
+                  <span className="font-disp strike-line clip-numeric block text-[clamp(4rem,11vw,7rem)] font-extrabold leading-none">
+                    80
+                  </span>
+                  <span className="mono block text-[0.625rem] tracking-[0.3em] text-night-fog">TOK/S</span>
+                </div>
               </div>
 
               {CHIPS.map((c, i) => (

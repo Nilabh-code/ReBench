@@ -218,7 +218,7 @@ $ gh pr create --fill`}
               <p className="mono text-[0.5625rem] tracking-[0.26em] text-stone">SEE ALSO</p>
               <ul className="mono mt-3 space-y-2 text-[0.6875rem] tracking-[0.12em]">
                 <li><Link href="/benchmarks" className="link-u">BENCHMARK INDEX →</Link></li>
-                <li><Link href="/runs/RUN-2026-08-24-000184" className="link-u">REFERENCE RUN →</Link></li>
+                <li><Link href="/contributors" className="link-u">CONTRIBUTORS →</Link></li>
               </ul>
             </div>
           </aside>

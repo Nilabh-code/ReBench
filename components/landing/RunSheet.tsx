@@ -35,7 +35,17 @@ function generationTrace(tps: number, ttftMs: number, tokens: number): string {
 
 export default function RunSheet() {
   const r = referenceRecord();
-  if (!r) return <section className="border-b border-ink/25"><div className="mx-auto max-w-page px-6 py-20 mono text-sm tracking-[0.16em] text-stone">NO MEASURED RUNS YET — SUBMIT A RESULT TO POPULATE THE RUN SHEET.</div></section>;
+  if (!r)
+    return (
+      <section className="border-b border-ink/25">
+        <div className="mx-auto w-full max-w-page px-6 py-20 md:px-10">
+          <SectionHead no="SEC.02 / SPECIMEN" title="ONE RUN, FULLY SPECIFIED" note="EVERY FIELD MEASURED, NONE IMPLIED" />
+          <p className="mono mt-12 text-sm tracking-[0.16em] text-stone">
+            NO MEASURED RUNS YET — SUBMIT A RESULT TO POPULATE THE RUN SHEET.
+          </p>
+        </div>
+      </section>
+    );
   const trace = generationTrace(r.generationTPS, r.ttft, Math.min(r.generatedTokens, 512));
 
   return (
@@ -52,8 +62,8 @@ export default function RunSheet() {
               <span className="mono block text-[0.5625rem] tracking-[0.26em] text-stone">RUN RECORD</span>
               <span className="mono text-lg font-semibold tracking-[0.08em] md:text-xl">{r.id}</span>
             </div>
-            <span className="stamp text-accent text-sm" data-reveal style={{ "--reveal-delay": "300ms" } as React.CSSProperties}>
-              {r.status}
+            <span data-reveal style={{ "--reveal-delay": "300ms" } as React.CSSProperties}>
+              <span className="stamp text-accent text-sm">{r.status}</span>
             </span>
           </div>
 
@@ -107,13 +117,13 @@ export default function RunSheet() {
               {/* instantaneous throughput trace */}
               <div className="mt-4">
                 <svg viewBox="0 0 100 32" className="h-20 w-full" preserveAspectRatio="none" role="img" aria-label="Instantaneous generation throughput trace">
-                  <g stroke="rgba(22,19,16,0.15)" strokeWidth="0.3">
+                  <g stroke="currentColor" strokeOpacity="0.15" strokeWidth="0.3">
                     {[8, 16, 24].map((y) => (
                       <line key={y} x1="0" y1={y} x2="100" y2={y} />
                     ))}
                   </g>
-                  <polyline points={trace} fill="none" stroke="#161310" strokeWidth="0.8" strokeLinejoin="round" />
-                  <line x1="8" y1="0" x2="8" y2="32" stroke="#d53a0c" strokeWidth="0.5" strokeDasharray="1.5 1.5" />
+                  <polyline points={trace} fill="none" stroke="currentColor" strokeWidth="0.8" strokeLinejoin="round" />
+                  <line x1="8" y1="0" x2="8" y2="32" className="text-accent" stroke="currentColor" strokeWidth="0.5" strokeDasharray="1.5 1.5" />
                 </svg>
                 <FigLabel className="mt-1 flex justify-between">
                   <span>INST. TOK/S — FIRST 512 TOKENS</span>

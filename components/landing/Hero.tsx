@@ -1,6 +1,6 @@
 import CalibrationRig from "../CalibrationRig";
 import InstrumentPanel from "../InstrumentPanel";
-import { allRecords, referenceRecord, REPO_URL } from "../../lib/data";
+import { allRecords, BUILD_DATE, referenceRecord, REPO_URL } from "../../lib/data";
 import { asciiBar } from "../../lib/format";
 import { CornerMarks, FigLabel } from "../ui";
 import Link from "next/link";
@@ -39,9 +39,11 @@ export default function Hero() {
       <div aria-hidden className="mono pointer-events-none absolute left-3 top-24 hidden text-[0.5625rem] tracking-[0.2em] text-stone/70 xl:block" style={{ writingMode: "vertical-rl" }}>
         AXIS Y — THROUGHPUT
       </div>
-      <div aria-hidden className="mono pointer-events-none absolute bottom-3 right-6 hidden text-[0.5625rem] tracking-[0.2em] text-stone/70 lg:block">
-        DATUM 2026-08-24
-      </div>
+      {BUILD_DATE ? (
+        <div aria-hidden className="mono pointer-events-none absolute bottom-3 right-6 hidden text-[0.5625rem] tracking-[0.2em] text-stone/70 lg:block">
+          DATUM {BUILD_DATE}
+        </div>
+      ) : null}
 
       <div className="mx-auto grid w-full max-w-page gap-12 px-6 pb-16 pt-14 md:px-10 lg:grid-cols-[1fr_430px] lg:gap-10 lg:pb-20 lg:pt-20">
         {/* statement */}
@@ -101,7 +103,7 @@ export default function Hero() {
                 CAL. UNIT 01 — INFERENCE STACK
               </span>
               <span className="mono text-[0.5625rem] tracking-[0.24em] text-night-fog">
-                ▸ LIVE
+                {reference ? "▸ MEASURED" : "▸ IDLE"}
               </span>
             </div>
 
@@ -115,7 +117,7 @@ export default function Hero() {
 
           <div className="mt-2 flex items-center justify-between px-1">
             <FigLabel>{reference ? `FIG.01 — RUN ${reference.id.slice(-6)} / ${reference.status}` : "FIG.01 — NO MEASURED RUN"}</FigLabel>
-            <FigLabel>θ = 0.22 rad·s⁻¹</FigLabel>
+            <FigLabel>{reference ? "UNIT 01 · MEASURED" : "UNIT 01 · IDLE"}</FigLabel>
           </div>
         </div>
       </div>

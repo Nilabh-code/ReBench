@@ -81,7 +81,7 @@ function InstrumentPanelRun({ rec }: { rec: BenchmarkRecord }) {
       {/* header */}
       <div className="flex items-center justify-between border-b border-night-edge px-4 py-2.5">
         <span className="mono text-[0.625rem] tracking-[0.22em] text-night-fog">
-          REBENCH / RUN 000184
+          REBENCH / RUN {rec.id.slice(-6)}
         </span>
         <span className="mono text-[0.625rem] tracking-[0.14em] text-night-fog">
           FIG.01
@@ -147,7 +147,7 @@ function InstrumentPanelRun({ rec }: { rec: BenchmarkRecord }) {
         <dt className="py-[3px] tracking-[0.2em] text-night-fog">STATUS</dt>
         <dd className="py-[3px] text-right">
           {phase === "VERIFIED" ? (
-            <span className="text-[#ff6a3d]">■ VERIFIED</span>
+            <span className="text-accent">■ VERIFIED</span>
           ) : phase === "VALIDATING" ? (
             <span className="blink text-night-fog">□ VALIDATING</span>
           ) : (
