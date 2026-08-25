@@ -21,7 +21,7 @@ export default function Problem() {
         <div className="mt-14 grid items-center gap-16 lg:grid-cols-[1fr_1fr]">
           {/* statement */}
           <div>
-            <h2 className="font-disp text-[clamp(2rem,4.4vw,3.7rem)] font-extrabold uppercase leading-[1.02]">
+            <h2 className="font-disp text-center text-[clamp(2rem,4.4vw,3.7rem)] font-extrabold uppercase leading-[1.02]">
               80 tok/s means
               <br />
               nothing without
