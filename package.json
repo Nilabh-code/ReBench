@@ -10,7 +10,10 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "node --test scripts/*.test.mjs",
+    "test:runner": "python3 -m pytest benchmark/tests/ -q",
+    "test:all": "npm test && npm run test:runner",
     "validate": "node scripts/validate-data.mjs",
+    "validate:record": "node scripts/validate-record.mjs",
     "generate:data": "node scripts/generate-data.mjs",
     "generate:types": "node scripts/generate-types.mjs"
   },

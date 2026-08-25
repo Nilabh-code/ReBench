@@ -67,14 +67,18 @@ export function validateIndex(data) {
 
     // A prompt of N tokens evaluated at P tok/s cannot yield a first token
     // before N/P seconds — nor much after that plus launch overhead.
+    // Skipped when prompt TPS was *derived from* ttft (estimated_from_ttft):
+    // the two quantities are equal by construction then, and only rounding
+    // could separate them — the check would needlessly reject sub-2ms runs.
     const prefillMs = (r.promptTokens / r.promptTPS) * 1000;
-    if (r.ttft < prefillMs * 0.9) {
+    const prefillIndependent = r.timingSource !== "estimated_from_ttft";
+    if (prefillIndependent && r.ttft < prefillMs * 0.9) {
       errors.push(
         `${at}: ttft ${r.ttft} ms is below the ${Math.round(prefillMs)} ms of prefill implied ` +
           `by promptTokens/promptTPS (${r.promptTokens} / ${r.promptTPS})`
       );
     }
-    if (r.ttft > prefillMs * 1.1 + 150) {
+    if (prefillIndependent && r.ttft > prefillMs * 1.1 + 150) {
       errors.push(
         `${at}: ttft ${r.ttft} ms far exceeds the ${Math.round(prefillMs)} ms of prefill ` +
           `implied by promptTokens/promptTPS — one of the three is wrong`

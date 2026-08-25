@@ -1,0 +1,47 @@
+{
+  "model": "fixture-model",
+  "family": "fixture",
+  "modelRevision": "0000000",
+  "quantization": "none",
+  "hardware": "fixture-hardware",
+  "gpuVendor": "CPU",
+  "vram": 0,
+  "ram": 16,
+  "cpu": "fixture-cpu",
+  "engine": "fixture-engine",
+  "engineVersion": "1.0.0",
+  "benchmarkVersion": "0.1.0",
+  "suite": "performance",
+  "promptTokens": 24,
+  "generatedTokens": 12,
+  "promptTPS": 60,
+  "generationTPS": 15,
+  "ttft": 410,
+  "timingSource": "estimated_from_ttft",
+  "trials": [
+    {
+      "generatedTokens": 12,
+      "ttft": 408.2,
+      "generationMs": 801.4,
+      "generationTPS": 14.974
+    },
+    {
+      "generatedTokens": 12,
+      "ttft": 411.9,
+      "generationMs": 798.6,
+      "generationTPS": 15.027
+    },
+    {
+      "generatedTokens": 12,
+      "ttft": 409.9,
+      "generationMs": 800,
+      "generationTPS": 15
+    }
+  ],
+  "score": 0,
+  "contributor": "fixture-user",
+  "timestamp": "2026-01-05T10:00:00Z",
+  "gitCommit": "0000000",
+  "status": "PENDING",
+  "id": "RUN-2026-01-05-18a59d"
+}

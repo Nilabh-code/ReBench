@@ -71,7 +71,15 @@ const CASES = [
   ["score out of range", (d) => { d.records[0].score = 4200; }, /<= 100/],
   ["non-integer token count", (d) => { d.records[0].promptTokens = 12.5; }, /integer/i],
   ["number as string", (d) => { d.records[0].generationTPS = "72.8"; }, /must be number/i],
+  ["provider timing still under the prefill floor", (d) => { d.records[0].timingSource = "provider"; d.records[0].ttft = 1; }, /below the/],
 ];
+
+test("exempts: estimated_from_ttft is derived from ttft, so prefill bounds carry no information", () => {
+  const data = pristine();
+  data.records[0].timingSource = "estimated_from_ttft";
+  data.records[0].ttft = 1; // would be impossible against an independent promptTPS
+  assert.deepEqual(validateIndex(data), []);
+});
 
 for (const [name, mutate, expected] of CASES) {
   test(`rejects: ${name}`, () => {
