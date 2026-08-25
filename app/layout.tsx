@@ -21,7 +21,7 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://rebench.netlify.app"),
+  metadataBase: new URL("https://nilabh-code.github.io/ReBench"),
   title: {
     default: "ReBench — Open, reproducible AI benchmarks",
     template: "%s — ReBench",

@@ -62,7 +62,7 @@ benchmark numbers.
 ```sh
 npm install
 npm run dev        # http://localhost:3000
-npm run build      # production build (Next.js; deployed on Netlify)
+npm run build      # static export to out/ (deployed to GitHub Pages)
 npm run lint
 npm run typecheck
 npm run generate:data  # regenerate data/benchmarks.json
@@ -100,7 +100,7 @@ record explicitly says `timingSource: estimated_from_ttft`.
 
 Copy the output into `results/<family>/`, run `npm run validate` and
 `npm run generate:data`, then submit a pull request. CI validates the record;
-after merge, Netlify rebuilds the measured leaderboard. `test-writing`,
+after merge, GitHub Pages rebuilds the measured leaderboard. `test-writing`,
 `refactoring`, `codebase-qna`, and `bug-fixing` are versioned suite identifiers
 in `benchmark/suites.json`; their task fixtures and evaluators must be
 published before claiming scores.
