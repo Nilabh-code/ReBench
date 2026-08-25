@@ -55,17 +55,23 @@ export default function Community() {
           {/* hardware distribution */}
           <div>
             <span className="mono text-[0.5625rem] tracking-[0.26em] text-stone">RUNS BY HARDWARE</span>
-            <ul className="mono mt-4 space-y-2.5 text-[0.6875rem]">
-              {hardware.map((h, i) => (
-                <li key={h.hardware} className="flex items-center gap-3" data-reveal style={{ "--reveal-delay": `${i * 50}ms` } as React.CSSProperties}>
-                  <span className="w-40 shrink-0 truncate tracking-[0.08em] text-graphite sm:w-44">{h.hardware.toUpperCase()}</span>
-                  <span className="relative h-[9px] flex-1 bg-paper-dark" aria-hidden>
-                    <span className="bar-fill" style={{ "--fill": h.count / maxHw } as React.CSSProperties} />
-                  </span>
-                  <span className="clip-numeric w-6 text-right">{h.count}</span>
-                </li>
-              ))}
-            </ul>
+            {hardware.length ? (
+              <ul className="mono mt-4 space-y-2.5 text-[0.6875rem]">
+                {hardware.map((h, i) => (
+                  <li key={h.hardware} className="flex items-center gap-3" data-reveal style={{ "--reveal-delay": `${i * 50}ms` } as React.CSSProperties}>
+                    <span className="w-40 shrink-0 truncate tracking-[0.08em] text-graphite sm:w-44">{h.hardware.toUpperCase()}</span>
+                    <span className="relative h-[9px] flex-1 bg-paper-dark" aria-hidden>
+                      <span className="bar-fill" style={{ "--fill": h.count / maxHw } as React.CSSProperties} />
+                    </span>
+                    <span className="clip-numeric w-6 text-right">{h.count}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-4 border border-ink/20 bg-paper-dim/50 p-5 mono text-[0.625rem] tracking-[0.16em] text-stone">
+                NO MEASURED HARDWARE RUNS YET.
+              </p>
+            )}
 
             <div className="mt-8 border border-ink/30 bg-paper-dim/60 p-5">
               <p className="mono text-[0.5625rem] tracking-[0.26em] text-stone">NOTE</p>
