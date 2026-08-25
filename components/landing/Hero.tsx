@@ -31,6 +31,8 @@ function TopRunsAscii() {
 }
 
 export default function Hero() {
+  const reference = referenceRecord();
+
   return (
     <section className="paper-grid relative overflow-hidden border-b border-ink/25">
       {/* axis annotations */}
@@ -107,12 +109,12 @@ export default function Hero() {
 
             <div className="relative mt-1 px-1 pb-1">
               <div aria-hidden className="ruler-x mb-2 opacity-40" />
-              <InstrumentPanel rec={referenceRecord()} />
+              <InstrumentPanel rec={reference} />
             </div>
           </div>
 
           <div className="mt-2 flex items-center justify-between px-1">
-            <FigLabel>FIG.01 — RUN 000184 / VERIFIED</FigLabel>
+            <FigLabel>{reference ? `FIG.01 — RUN ${reference.id.slice(-6)} / ${reference.status}` : "FIG.01 — NO MEASURED RUN"}</FigLabel>
             <FigLabel>θ = 0.22 rad·s⁻¹</FigLabel>
           </div>
         </div>
