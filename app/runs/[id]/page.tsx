@@ -5,8 +5,11 @@ import { CornerMarks, FigLabel, KV, StatusBadge } from "../../../components/ui";
 import { allRecords, recordById, resultFileUrl, REPO_URL } from "../../../lib/data";
 import { fmtNum, fmtStamp, shortHash } from "../../../lib/format";
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
-  return allRecords().map((r) => ({ id: r.id }));
+  const records = allRecords();
+  return records.length ? records.map((r) => ({ id: r.id })) : [{ id: "__empty__" }];
 }
 
 function generationTrace(tps: number, ttftMs: number, tokens: number, seed: number): string {
