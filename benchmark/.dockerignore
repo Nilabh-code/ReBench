@@ -1,0 +1,4 @@
+# Build context for the runner image is benchmark/ — keep it minimal.
+tests/
+__pycache__/
+*.pyc

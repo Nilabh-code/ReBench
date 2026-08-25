@@ -59,3 +59,65 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  runner:
+    # The producer of every published number: SSE parsing, metric math,
+    # manifest handling and the content-addressed id (parity with run-id.mjs).
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pytest
+        run: python -m pip install --quiet pytest
+
+      - name: Runner tests
+        run: python -m pytest benchmark/tests/ -q
+
+  docker:
+    # Builds the contributor-facing image and drives the exact submission flow
+    # end to end: container -> mock endpoint -> record -> schema validation.
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci --ignore-scripts
+
+      - name: Build runner image
+        run: docker build -t rebench-runner:ci benchmark/
+
+      - name: Runner image smoke test against mock endpoint
+        run: |
+          mkdir -p smoke
+          python3 benchmark/tests/mock_server.py --port 8123 > mock-server.log 2>&1 &
+          echo $! > mock-server.pid
+          for i in $(seq 1 50); do
+            curl -s -o /dev/null -X POST http://127.0.0.1:8123/v1/chat/completions -d '{"model":"warmup"}' -H 'Content-Type: application/json' && break
+            sleep 0.2
+          done
+          docker run --rm --network host --user "$(id -u):$(id -g)" \
+            -v "$PWD/smoke:/output" rebench-runner:ci \
+            --base-url http://127.0.0.1:8123/v1 \
+            --model mock-model --family mock --contributor ci-bot \
+            --model-revision 0000000 --git-commit 0000000 \
+            --output /output/run.json --status-file /output/status.json
+          kill "$(cat mock-server.pid)"
+
+      # Validate the produced record exactly as a contributor submission would be:
+      # same schema, same cross-field invariants, same filename rule.
+      - name: Validate the produced record
+        run: |
+          ID=$(node -p "JSON.parse(require('fs').readFileSync('smoke/status.json','utf8')).id")
+          mv "smoke/run.json" "smoke/${ID}.json"
+          node scripts/validate-record.mjs "smoke/${ID}.json"

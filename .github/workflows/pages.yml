@@ -30,10 +30,16 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Validate data
         run: npm run validate
+      - name: Tests
+        run: npm test
       - name: Generate data index
         run: npm run generate:data
       - name: Ensure generated index is committed
         run: git diff --exit-code -- data/benchmarks.json
+      - name: Expose build provenance to the site
+        run: |
+          echo "NEXT_PUBLIC_BUILD_HASH=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_BUILD_DATE=$(git log -1 --format=%cd --date=short)" >> "$GITHUB_ENV"
       - name: Build static site
         run: npm run build
       - name: Configure Pages
