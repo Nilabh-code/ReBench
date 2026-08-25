@@ -22,7 +22,7 @@ const TARGETS = [
 ];
 
 // Enums worth a name of their own; anything else is emitted inline.
-const ENUM_ALIASES = { status: "BenchmarkStatus", gpuVendor: "GpuVendor" };
+const ENUM_ALIASES = { status: "BenchmarkStatus", gpuVendor: "GpuVendor", timingSource: "TimingSource" };
 
 const schemas = TARGETS.map((t) => ({
   ...t,
@@ -48,6 +48,11 @@ function tsType(prop, key) {
       return "number";
     case "boolean":
       return "boolean";
+    case "object": {
+      if (!prop.properties) throw new Error(`object without properties: ${key}`);
+      const required = new Set(prop.required ?? []);
+      return `{ ${Object.entries(prop.properties).map(([childKey, child]) => `${childKey}${required.has(childKey) ? "" : "?"}: ${tsType(child, childKey)}`).join("; ")} }`;
+    }
     case "array":
       if (!prop.items) throw new Error(`array without items: ${key}`);
       return `${tsType(prop.items, key)}[]`;

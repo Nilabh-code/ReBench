@@ -1,6 +1,6 @@
 import raw from "../data/benchmarks.json";
 import contributorRoster from "../data/contributors.json";
-import { BENCHMARK_STATUS_VALUES, GPU_VENDOR_VALUES } from "./schema-types";
+import { BENCHMARK_STATUS_VALUES, GPU_VENDOR_VALUES, TIMING_SOURCE_VALUES } from "./schema-types";
 import type {
   BenchmarkIndex,
   BenchmarkRecord,
@@ -24,9 +24,12 @@ export interface ActivityDay {
 function toRecord(r: RawBenchmarkRecord): BenchmarkRecord {
   const status = BENCHMARK_STATUS_VALUES.find((s) => s === r.status);
   const gpuVendor = GPU_VENDOR_VALUES.find((v) => v === r.gpuVendor);
+  const timingSource = r.timingSource === undefined ? undefined : TIMING_SOURCE_VALUES.find((v) => v === r.timingSource);
   if (!status) throw new Error(`benchmarks.json: ${r.id} has unknown status "${r.status}"`);
   if (!gpuVendor) throw new Error(`benchmarks.json: ${r.id} has unknown gpuVendor "${r.gpuVendor}"`);
-  return { ...r, status, gpuVendor };
+  if (r.timingSource !== undefined && !timingSource) throw new Error(`benchmarks.json: ${r.id} has unknown timingSource "${r.timingSource}"`);
+  const { timingSource: _rawTimingSource, ...rest } = r;
+  return { ...rest, status, gpuVendor, ...(timingSource ? { timingSource } : {}) };
 }
 
 // Typed assignments, not casts: BenchmarkIndex and RawBenchmarkRecord are

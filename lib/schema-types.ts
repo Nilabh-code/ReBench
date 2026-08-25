@@ -9,6 +9,10 @@ export type GpuVendor = "NVIDIA" | "AMD" | "APPLE" | "CPU";
 
 export const GPU_VENDOR_VALUES: readonly GpuVendor[] = ["NVIDIA", "AMD", "APPLE", "CPU"];
 
+export type TimingSource = "provider" | "estimated_from_ttft";
+
+export const TIMING_SOURCE_VALUES: readonly TimingSource[] = ["provider", "estimated_from_ttft"];
+
 /** A single, fully specified inference benchmark run. One file per run in results/{family}/. */
 export interface BenchmarkRecord {
   /** Run identifier: RUN-YYYY-MM-DD-HHHHHH. The suffix is a content hash of the run, so concurrent submissions cannot collide and an id cannot be chosen by hand. */
@@ -31,6 +35,9 @@ export interface BenchmarkRecord {
   benchmarkVersion: string;
   /** Versioned ReBench evaluation suite identifier. */
   suite: string;
+  /** Whether prompt TPS used provider timing metadata or an estimate. */
+  timingSource?: TimingSource;
+  trials?: { generatedTokens: number; ttft: number; generationMs: number; generationTPS: number }[];
   promptTokens: number;
   generatedTokens: number;
   /** Prompt evaluation throughput, tokens/s. */
@@ -65,6 +72,8 @@ export interface RawBenchmarkRecord {
   engineVersion: string;
   benchmarkVersion: string;
   suite: string;
+  timingSource?: string;
+  trials?: { generatedTokens: number; ttft: number; generationMs: number; generationTPS: number }[];
   promptTokens: number;
   generatedTokens: number;
   promptTPS: number;
