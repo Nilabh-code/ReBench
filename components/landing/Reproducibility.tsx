@@ -21,7 +21,7 @@ export default function Reproducibility() {
             </span>
             <div className="rotate-[-0.4deg] border border-dashed border-stone bg-paper p-7 md:p-9">
               <p className="mono text-[0.625rem] tracking-[0.22em] text-stone">MARKETING PAGE, PROBABLY</p>
-              <blockquote className="font-disp mt-4 text-4xl font-extrabold md:text-5xl">
+              <blockquote className="font-disp mt-4 text-center text-4xl font-extrabold md:text-5xl">
                 &ldquo;Model X hits{" "}
                 <span className="bg-paper-dark px-1">80 tok/s</span>&rdquo;
               </blockquote>
