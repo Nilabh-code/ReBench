@@ -102,7 +102,7 @@ def test_hardware_takes_first_gpu_line(monkeypatch):
     monkeypatch.setattr(runner, "command_text", fake_command)
     hw = runner.hardware()
     assert hw["hardware"] == "RTX 4090"
-    assert hw["vram"] == 24564.0
+    assert hw["vram"] == 24564.0 / 1024
     assert hw["gpuVendor"] == "NVIDIA"
 
 
@@ -202,6 +202,19 @@ def test_stream_trial_without_usage_counts_words(base_url):
     generated, _, _, usage = runner.stream_trial(runner.endpoint_for(base_url), body, "")
     assert "completion_tokens" not in usage
     assert generated == 12  # 12 content chunks, one word each
+
+
+def test_stream_trial_accepts_reasoning_only_stream(base_url):
+    body = {"model": "mock-reasoning-model", "stream": True}
+    generated, _, _, usage = runner.stream_trial(runner.endpoint_for(base_url), body, "")
+    assert generated == 12
+    assert usage["completion_tokens"] == 12
+
+
+def test_model_metadata_extracts_quant_and_context():
+    payload = {"data": [{"id": "ornith", "quant": "Q5_K_M", "context_length": 262144, "max_context_length": 8192}]}
+    metadata = runner.model_metadata(payload, "ornith")
+    assert metadata == {"quantization": "Q5_K_M", "contextLength": 8192}
 
 
 def test_with_retries_recovers_from_transient_failures(base_url, monkeypatch):

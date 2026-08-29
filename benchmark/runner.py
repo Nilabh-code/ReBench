@@ -12,6 +12,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+import platform
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -67,7 +68,7 @@ def hardware() -> dict[str, object]:
     if first_gpu:
         name, _, memory = first_gpu.partition(",")
         try:
-            vram = float(memory.strip() or 0)
+            vram = float(memory.strip() or 0) / 1024
         except ValueError:
             vram = 0.0
         return {
@@ -75,14 +76,14 @@ def hardware() -> dict[str, object]:
             "gpuVendor": "NVIDIA",
             "vram": vram,
             "ram": float(command_text(["awk", "/MemTotal/ {printf \"%.0f\", $2/1024/1024}", "/proc/meminfo"], "1")),
-            "cpu": command_text(["uname", "-p"], "unknown-cpu"),
+            "cpu": command_text(["bash", "-lc", "grep -m1 'model name' /proc/cpuinfo | cut -d: -f2"], "unknown-cpu"),
         }
     return {
         "hardware": os.getenv("REBENCH_HARDWARE", "CPU / unavailable GPU"),
         "gpuVendor": os.getenv("REBENCH_GPU_VENDOR", "CPU"),
         "vram": float_env("REBENCH_VRAM_GB", 0.0),
         "ram": max(float_env("REBENCH_RAM_GB", 1.0), 1.0),
-        "cpu": os.getenv("REBENCH_CPU", command_text(["uname", "-p"], "unknown-cpu")),
+        "cpu": os.getenv("REBENCH_CPU", command_text(["bash", "-lc", "grep -m1 'model name' /proc/cpuinfo | cut -d: -f2"], "unknown-cpu")),
     }
 
 
@@ -102,6 +103,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--max-tokens", type=int, default=128)
     p.add_argument("--warmups", type=int, default=1)
     p.add_argument("--repetitions", type=int, default=3)
+    p.add_argument("--request-timeout", type=float, default=300)
+    p.add_argument("--disable-thinking", action="store_true")
     p.add_argument("--output", default="/output/run.json")
     p.add_argument("--status-file", default="/output/status.json")
     return p.parse_args(argv)
@@ -129,6 +132,18 @@ def endpoint_for(base: str) -> str:
     return base if base.endswith("/chat/completions") else f"{base}/chat/completions"
 
 
+def model_metadata(payload: dict, model: str) -> dict[str, object]:
+    """Extract optional OpenAI-compatible model metadata."""
+    for item in payload.get("data", []):
+        if item.get("id") == model:
+            context = item.get("max_context_length") or item.get("context_length")
+            return {
+                "quantization": str(item.get("quant") or item.get("quantization") or "unknown"),
+                "contextLength": int(context) if context else 0,
+            }
+    return {"quantization": "unknown", "contextLength": 0}
+
+
 def headers(key: str) -> dict[str, str]:
     result = {"Content-Type": "application/json", "Accept": "text/event-stream"}
     if key:
@@ -136,7 +151,7 @@ def headers(key: str) -> dict[str, str]:
     return result
 
 
-def stream_trial(url: str, body: dict, key: str) -> tuple[int, float, float, dict]:
+def stream_trial(url: str, body: dict, key: str, timeout: float = 300) -> tuple[int, float, float, dict]:
     request = urllib.request.Request(url, data=json.dumps(body).encode(), headers=headers(key), method="POST")
     started = time.perf_counter()
     first_token: float | None = None
@@ -144,7 +159,7 @@ def stream_trial(url: str, body: dict, key: str) -> tuple[int, float, float, dic
     usage: dict = {}
     chunks = 0
     bad_chunks = 0
-    with urllib.request.urlopen(request, timeout=300) as response:
+    with urllib.request.urlopen(request, timeout=timeout) as response:
         for raw in response:
             line = raw.decode("utf-8", errors="replace").strip()
             if not line.startswith("data:"):
@@ -171,7 +186,10 @@ def stream_trial(url: str, body: dict, key: str) -> tuple[int, float, float, dic
         # a plausible-but-wrong record. Refuse instead.
         raise TrialError("endpoint returned no SSE chunks — is the server streaming? ReBench requires stream=true")
     if first_token is None:
-        raise TrialError("endpoint streamed chunks but never produced any content tokens")
+        if usage.get("completion_tokens"):
+            first_token = time.perf_counter()
+        else:
+            raise TrialError("endpoint streamed chunks but produced no visible tokens")
     finished = time.perf_counter()
     generated = int(usage.get("completion_tokens") or max(1, len("".join(pieces).split())))
     ttft_ms = (first_token - started) * 1000
@@ -283,16 +301,21 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("--repetitions must be >= 1 and --warmups must be >= 0")
     hw = hardware()
     url = endpoint_for(cfg.base_url)
-    body = {"model": cfg.model, "messages": [{"role": "user", "content": cfg.prompt}], "temperature": 0, "max_tokens": cfg.max_tokens, "stream": True, "stream_options": {"include_usage": True}}
+    body = {"model": cfg.model, "messages": [{"role": "user", "content": cfg.prompt}], "temperature": 0, "top_p": 1.0, "max_tokens": cfg.max_tokens, "stream": True, "stream_options": {"include_usage": True}}
+    if cfg.disable_thinking:
+        body["chat_template_kwargs"] = {"enable_thinking": False}
     try:
         write_status(cfg.status_file, "fingerprinting", hardware=hw)
         write_status(cfg.status_file, "warming_up", total=cfg.warmups + cfg.repetitions)
         for _ in range(cfg.warmups):
-            with_retries(lambda: stream_trial(url, body, cfg.api_key), what="warmup request")
+            with_retries(lambda: stream_trial(url, body, cfg.api_key, cfg.request_timeout), what="warmup request")
         trials: list[tuple[int, float, float, dict]] = []
         for index in range(cfg.repetitions):
             write_status(cfg.status_file, "measuring", repetition=index + 1, total=cfg.repetitions)
-            trials.append(with_retries(lambda: stream_trial(url, body, cfg.api_key), what="measurement request"))
+            trial = with_retries(lambda: stream_trial(url, body, cfg.api_key, cfg.request_timeout), what="measurement request")
+            if trial is None:
+                raise TrialError("measurement returned no result")
+            trials.append(trial)
     except TRANSIENT_ERRORS as exc:
         write_status(cfg.status_file, "failed", error=sanitize_error(exc))
         print(f"benchmark request failed: {exc}", file=sys.stderr)

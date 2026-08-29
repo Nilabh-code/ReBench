@@ -1,0 +1,47 @@
+{
+  "model": "ornith-ai/Ornith-1.5-35B-A3B-GGUF",
+  "family": "ornith",
+  "modelRevision": "0000000",
+  "quantization": "Q5_K_M",
+  "hardware": "NVIDIA GeForce RTX 5060 Ti",
+  "gpuVendor": "NVIDIA",
+  "vram": 15.9287109375,
+  "ram": 31.0,
+  "cpu": "13th Gen Intel(R) Core(TM) i5-13400F",
+  "engine": "OpenAI-compatible API",
+  "engineVersion": "unknown",
+  "benchmarkVersion": "0.1.0",
+  "suite": "performance",
+  "promptTokens": 28,
+  "generatedTokens": 85,
+  "promptTPS": 171.974,
+  "generationTPS": 48.341,
+  "ttft": 162.816,
+  "timingSource": "estimated_from_ttft",
+  "trials": [
+    {
+      "generatedTokens": 85,
+      "ttft": 243.838,
+      "generationMs": 1754.378,
+      "generationTPS": 48.45
+    },
+    {
+      "generatedTokens": 85,
+      "ttft": 129.065,
+      "generationMs": 1760.297,
+      "generationTPS": 48.287
+    },
+    {
+      "generatedTokens": 85,
+      "ttft": 115.544,
+      "generationMs": 1760.384,
+      "generationTPS": 48.285
+    }
+  ],
+  "score": 0,
+  "contributor": "Nilabh-code",
+  "timestamp": "2026-08-29T13:52:54Z",
+  "gitCommit": "0000000",
+  "status": "PENDING",
+  "id": "RUN-2026-08-29-98a9b5"
+}
