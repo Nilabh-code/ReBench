@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "2.0",
+  "id": "RUN-20260829T141825Z-76e584",
+  "model": "ornith-ai/Ornith-1.5-35B-A3B-GGUF",
+  "suite": "deep-swe-v1",
+  "suiteName": "Deep SWE / code reasoning",
+  "thinkingEnabled": true,
+  "hardware": {
+    "hardware": "NVIDIA GeForce RTX 5060 Ti",
+    "gpuVendor": "NVIDIA",
+    "vramGB": 15.929,
+    "ramGB": 31.12,
+    "cpu": "13th Gen Intel(R) Core(TM) i5-13400F",
+    "source": "local host"
+  },
+  "contextLength": "provider metadata not exposed",
+  "prompt": "Review this Python function for correctness, security, and maintainability. Identify three concrete issues and propose a corrected implementation. Function: def parse_items(text): return [x.strip() for x in text.split(',') if x]",
+  "promptTokens": 54,
+  "generatedTokens": 384,
+  "promptTPS": 7.114,
+  "generationTPS": 50.586,
+  "ttftMs": 7591.616,
+  "trials": [
+    {
+      "promptTokens": 54,
+      "generatedTokens": 384,
+      "visibleCharacters": 0,
+      "reasoningCharacters": 1284,
+      "ttftMs": 7668.097,
+      "generationMs": 7668.097,
+      "generationTPS": 50.078,
+      "promptTPS": 7.042,
+      "usage": {
+        "prompt_tokens": 54,
+        "completion_tokens": 384,
+        "total_tokens": 438,
+        "prompt_tokens_details": {
+          "cached_tokens": 50,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    },
+    {
+      "promptTokens": 54,
+      "generatedTokens": 384,
+      "visibleCharacters": 0,
+      "reasoningCharacters": 1284,
+      "ttftMs": 7514.909,
+      "generationMs": 7514.909,
+      "generationTPS": 51.098,
+      "promptTPS": 7.186,
+      "usage": {
+        "prompt_tokens": 54,
+        "completion_tokens": 384,
+        "total_tokens": 438,
+        "prompt_tokens_details": {
+          "cached_tokens": 50,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    },
+    {
+      "promptTokens": 54,
+      "generatedTokens": 384,
+      "visibleCharacters": 0,
+      "reasoningCharacters": 1284,
+      "ttftMs": 7591.842,
+      "generationMs": 7591.842,
+      "generationTPS": 50.581,
+      "promptTPS": 7.113,
+      "usage": {
+        "prompt_tokens": 54,
+        "completion_tokens": 384,
+        "total_tokens": 438,
+        "prompt_tokens_details": {
+          "cached_tokens": 50,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      }
+    }
+  ],
+  "timestamp": "2026-08-29T14:18:25Z",
+  "status": "PENDING",
+  "provenance": "measured locally by ReBench Local Studio"
+}
