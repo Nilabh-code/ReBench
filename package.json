@@ -27,7 +27,7 @@
     "@types/node": "^22.15.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
-    "@types/three": "^0.170.0",
+    "@types/three": "^0.185.4",
     "ajv": "^8.20.0",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
